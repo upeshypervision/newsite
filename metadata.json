@@ -1,0 +1,6 @@
+{
+  "name": "UPES HyperVision | Technical Innovation Society",
+  "description": "Official website of UPES HyperVision. Innovate. Collaborate. Elevate. Explore cutting-edge student projects, hackathons, SIH qualifiers, research initiatives, and leadership at School of Computer Science, UPES Dehradun.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
