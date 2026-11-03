@@ -1,86 +1,61 @@
 import React from 'react';
-import { STATISTICS } from '../data/hypervisionData';
 
 export const About: React.FC = () => {
   return (
-    <section id="about" className="site-section py-24 sm:py-32 bg-[#050c16] text-white relative">
+    <section id="about" className="site-section py-16 sm:py-20 bg-[#050c16] text-white">
       <div className="section-wrap">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          <div className="lg:col-span-5">
-            <p className="section-kicker">01 // Identity & Purpose</p>
-            <h2 className="section-title mt-4">
-              Learn by<br />
-              <span className="text-[#1ab7f2]">building.</span>
-            </h2>
-            <p className="mt-6 text-base leading-relaxed text-[#8fa2b6] max-w-md">
-              Hypervision is UPES&apos;s longest-standing student-led technical society. We don&apos;t run slide-deck clubs. We engineer software, build avionics hardware, host 330+ team national qualifiers, and ship real systems.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a href="/board" className="editorial-button">
-                Meet the Board
+        <div className="border border-white/10 bg-[#081322] p-8 sm:p-12 relative overflow-hidden">
+          {/* Subtle blue accent corner */}
+          <div className="absolute top-0 left-0 w-2 h-full bg-[#1ab7f2]" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-8">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[10px] font-mono uppercase tracking-[.18em] text-[#1ab7f2] font-semibold">
+                  01 // Society Manifesto
+                </span>
+                <span className="text-white/20">&bull;</span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#788e9f]">
+                  Est. 2011
+                </span>
+              </div>
+
+              <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+                Learn by building.<br />
+                <span className="text-[#1ab7f2]">Ship what matters.</span>
+              </h2>
+
+              <p className="mt-4 text-base sm:text-lg leading-relaxed text-[#9ab0c4] max-w-2xl">
+                Hypervision is UPES&apos;s oldest student-led technical society. We bring together developers, avionics researchers, and community hackers to engineer high-throughput hackathon matrices, drone flight firmware with NIT Kurukshetra &amp; MeitY, and production tools for 330+ competing teams.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-2 text-xs font-mono uppercase tracking-wider text-[#1ab7f2]">
+                <span className="bg-[#050c16] border border-[#1ab7f2]/30 px-3 py-1">
+                  01 / Build in Public
+                </span>
+                <span className="bg-[#050c16] border border-[#1ab7f2]/30 px-3 py-1">
+                  02 / Autonomous Systems
+                </span>
+                <span className="bg-[#050c16] border border-[#1ab7f2]/30 px-3 py-1">
+                  03 / Zero Figureheads
+                </span>
+              </div>
+            </div>
+
+            <div className="lg:col-span-4 flex flex-col gap-3 lg:border-l lg:border-white/10 lg:pl-8">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#788e9f]">
+                Want the full picture?
+              </span>
+              <a href="/board" className="editorial-button primary w-full text-center">
+                Read Full Story &amp; Board &rarr;
               </a>
-              <a href="/#projects" className="editorial-button primary">
-                View Working Projects
+              <a href="#projects" className="editorial-button w-full text-center">
+                View What We Ship
+              </a>
+              <a href="#events" className="editorial-button text-[#1ab7f2] border-white/10 hover:border-[#1ab7f2] w-full text-center">
+                Check Event Calendar
               </a>
             </div>
-          </div>
-
-          <div className="lg:col-span-7 space-y-10">
-            <div className="border-l-2 border-[#1ab7f2] pl-6 py-1">
-              <p className="font-display text-2xl sm:text-3xl font-semibold leading-snug text-white">
-                &ldquo;Everything we build is rooted in one conviction: students evolve into world-class engineers through hands-on creation, serious pressure, and shared curiosity.&rdquo;
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-[15px] leading-relaxed text-[#8fa2b6]">
-              <p>
-                Founded in 2011 at the School of Computer Science, Hypervision brings together developers, avionics researchers, designers, and organizers to bridge the gap between classroom theory and production engineering.
-              </p>
-              <p>
-                From partnering with NIT Kurukshetra and MeitY on autonomous drones to engineering the real-time scoring platforms for 24-hour hackathons, the community exists to turn raw ambition into working code.
-              </p>
-            </div>
-
-            {/* Clean Typographic Stats Matrix */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t border-white/10">
-              {STATISTICS.slice(0, 4).map((stat) => (
-                <div key={stat.label} className="space-y-1">
-                  <div className="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">
-                    {stat.value}
-                  </div>
-                  <div className="text-[10px] font-mono uppercase tracking-[.12em] text-[#1ab7f2]">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 3 Technical Principles */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-0 border border-white/10 bg-[#07111e]">
-          <div className="p-8 border-b md:border-b-0 md:border-r border-white/10">
-            <span className="font-mono text-xs text-[#1ab7f2] font-semibold tracking-wider">01 // PRINCIPLE</span>
-            <h3 className="mt-4 font-display text-2xl font-bold text-white">Build in public</h3>
-            <p className="mt-3 text-sm leading-relaxed text-[#8fa2b6]">
-              Prototypes get battle-tested faster when people can test, audit, and push edge cases to breaking points.
-            </p>
-          </div>
-
-          <div className="p-8 border-b md:border-b-0 md:border-r border-white/10">
-            <span className="font-mono text-xs text-[#1ab7f2] font-semibold tracking-wider">02 // PRINCIPLE</span>
-            <h3 className="mt-4 font-display text-2xl font-bold text-white">Autonomous rigor</h3>
-            <p className="mt-3 text-sm leading-relaxed text-[#8fa2b6]">
-              From microcontrollers and avionics firmware to real-time WebSockets and distributed queues, we value depth over buzzwords.
-            </p>
-          </div>
-
-          <div className="p-8">
-            <span className="font-mono text-xs text-[#1ab7f2] font-semibold tracking-wider">03 // PRINCIPLE</span>
-            <h3 className="mt-4 font-display text-2xl font-bold text-white">Leave a trail</h3>
-            <p className="mt-3 text-sm leading-relaxed text-[#8fa2b6]">
-              Every tool, event rubric, and project scaffold is documented so the next cohort starts three steps ahead.
-            </p>
           </div>
         </div>
       </div>

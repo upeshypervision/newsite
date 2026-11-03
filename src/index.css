@@ -201,13 +201,12 @@
 .activity-card {
   background: #081322;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+  transition: border-color .25s ease, box-shadow .25s ease;
 }
 
 .activity-card:hover {
-  transform: translateY(-6px);
   border-color: rgba(26, 183, 242, 0.7);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
 }
 
 .activity-card img {
@@ -227,7 +226,7 @@
 .event-card {
   overflow: hidden;
   border-radius: 0;
-  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+  transition: border-color .25s ease, box-shadow .25s ease;
 }
 
 .event-card-current {
@@ -236,9 +235,8 @@
 }
 
 .event-card-current:hover {
-  transform: translateY(-6px);
   border-color: var(--blue);
-  box-shadow: 0 22px 50px rgba(26, 183, 242, 0.15);
+  box-shadow: 0 22px 50px rgba(26, 183, 242, 0.25);
 }
 
 .event-card-past {
@@ -247,8 +245,8 @@
 }
 
 .event-card-past:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
 }
 
 .event-card-past img {
