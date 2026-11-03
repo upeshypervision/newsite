@@ -22,6 +22,7 @@ export interface TeamMember {
   initials: string;
   linkedin?: string;
   github?: string;
+  quote?: string;
 }
 
 export interface Milestone {
@@ -47,6 +48,7 @@ export interface EventItem {
   link?: string;
   image: string;
   galleryImages?: string[];
+  highlights?: string[];
 }
 
 export interface Sponsor {
