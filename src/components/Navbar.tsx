@@ -3,32 +3,4 @@ import { HypervisionLogo } from './HypervisionLogo';
 
 interface NavbarProps { onOpenJoin?: () => void; }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-  const links = [['About', '#about'], ['Work', '#projects'], ['Events', '#events'], ['Board', '/board'], ['Partners', '#sponsors']];
-  return (
-    <header className={`fixed z-40 top-0 inset-x-0 transition-colors ${scrolled ? 'glass-nav' : 'bg-[#101114]/45'}`}>
-      <div className="section-wrap h-[72px] flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-3 text-white no-underline">
-          <HypervisionLogo size={28} />
-          <span className="font-mono text-[12px] font-medium tracking-[.14em]">HYPERVISION</span>
-        </a>
-        <nav className="hidden md:flex items-center gap-7">
-          {links.map(([label, href]) => <a key={href} href={href} className="text-[11px] font-mono uppercase tracking-[.1em] text-[#9b9da5] hover:text-white transition-colors">{label}</a>)}
-          <button onClick={onOpenJoin} className="editorial-button primary !min-h-[38px] !px-4">Join us</button>
-        </nav>
-        <button onClick={() => setOpen(!open)} className="md:hidden text-[11px] font-mono uppercase tracking-widest text-white border border-white/30 px-3 py-2" aria-expanded={open}>{open ? 'Close' : 'Menu'}</button>
-      </div>
-      {open && <nav className="md:hidden bg-[#101114] border-t border-white/10 px-5 py-4 flex flex-col gap-4">
-        {links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)} className="text-[12px] font-mono uppercase tracking-widest text-[#b5b6bc]">{label}</a>)}
-        <button onClick={() => { setOpen(false); onOpenJoin?.(); }} className="editorial-button w-fit">Apply to join</button>
-      </nav>}
-    </header>
-  );
-};
+export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => { const [open, setOpen] = useState(false); const [scrolled, setScrolled] = useState(false); useEffect(() => { const onScroll = () => setScrolled(window.scrollY > 18); window.addEventListener('scroll', onScroll, { passive: true }); return () => window.removeEventListener('scroll', onScroll); }, []); const links = [['About', '#about'], ['Activity', '#projects'], ['Events', '#events'], ['Board', '/board']]; return <header className={`fixed z-40 top-0 inset-x-0 transition-colors ${scrolled ? 'glass-nav' : 'bg-[#07111f]/70'}`}><div className="section-wrap h-[78px] flex items-center justify-between gap-8"><a href="/" className="flex items-center gap-3 text-white no-underline shrink-0"><HypervisionLogo size={30} /><span className="font-display font-semibold text-lg tracking-[-.04em]">hypervision<span className="text-[#1ab7f2]">.</span></span></a><nav className="hidden md:flex items-center gap-8">{links.map(([label, href]) => <a key={href} href={href} className="text-[11px] font-mono uppercase tracking-[.1em] text-[#b0c0cd] hover:text-white transition-colors">{label}</a>)}</nav><div className="hidden md:block"><button onClick={onOpenJoin} className="editorial-button primary !min-h-[42px] !px-5">Join the club</button></div><button onClick={() => setOpen(!open)} className="md:hidden text-[11px] font-mono uppercase tracking-widest text-white border border-white/35 px-3 py-2" aria-expanded={open}>{open ? 'Close' : 'Menu'}</button></div>{open && <nav className="md:hidden bg-[#07111f] border-t border-white/10 px-5 py-5 flex flex-col gap-5">{links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)} className="text-[12px] font-mono uppercase tracking-widest text-[#c2d0dc]">{label}</a>)}<button onClick={() => { setOpen(false); onOpenJoin?.(); }} className="editorial-button primary w-fit">Join the club</button></nav>}</header>; };
