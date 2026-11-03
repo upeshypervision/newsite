@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CONTENT_EVENT, getManagedEvents, ManagedEvent } from '../data/contentStore';
+import { CONTENT_EVENT, getManagedEvents, hydrateManagedContent, ManagedEvent } from '../data/contentStore';
 
 interface EventsProps { onOpenJoin: () => void; }
 
@@ -22,7 +22,7 @@ const EventCard = ({ event, featured = false }: { event: ManagedEvent; featured?
 
 export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
   const [events, setEvents] = useState<ManagedEvent[]>(getManagedEvents);
-  useEffect(() => { const update = () => setEvents(getManagedEvents()); window.addEventListener(CONTENT_EVENT, update); return () => window.removeEventListener(CONTENT_EVENT, update); }, []);
+  useEffect(() => { const update = () => setEvents(getManagedEvents()); void hydrateManagedContent(); window.addEventListener(CONTENT_EVENT, update); return () => window.removeEventListener(CONTENT_EVENT, update); }, []);
   const current = events.filter((event) => event.isUpcoming);
   const past = events.filter((event) => !event.isUpcoming);
   return <section id="events" className="site-section py-28"><div className="section-wrap">

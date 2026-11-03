@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EventItem } from '../data/hypervisionData';
-import { getManagedEvents, getManagedFamily, ManagedEvent, ManagedFamilyMember, resetManagedContent, saveManagedEvents, saveManagedFamily } from '../data/contentStore';
+import { getManagedEvents, getManagedFamily, hydrateManagedContent, ManagedEvent, ManagedFamilyMember, resetManagedContent, saveManagedEvents, saveManagedFamily } from '../data/contentStore';
 
 const emptyEvent = (): ManagedEvent => ({ id: `event-${Date.now()}`, title: '', subtitle: '', category: 'workshop', date: '', month: '', day: '', year: '', location: '', teamsOrAttendees: '', description: '', image: '/events/code_hustle.webp', link: '', isUpcoming: true, highlights: ['', '', ''] });
 const emptyMember = (): ManagedFamilyMember => ({ name: '', role: '', category: 'technical', department: '', image: '', initials: '', quote: '' });
@@ -17,6 +17,8 @@ export const AdminPanel: React.FC = () => {
   const [family, setFamily] = useState<ManagedFamilyMember[]>(getManagedFamily);
   const [editingEvent, setEditingEvent] = useState<ReturnType<typeof eventToForm> | null>(null);
   const [editingMember, setEditingMember] = useState<ManagedFamilyMember | null>(null);
+
+  React.useEffect(() => { void hydrateManagedContent().then(() => { setEvents(getManagedEvents()); setFamily(getManagedFamily()); }); }, []);
 
   const saveEvent = () => {
     if (!editingEvent?.title.trim()) return;

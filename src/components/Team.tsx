@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CONTENT_EVENT, getManagedFamily, ManagedFamilyMember } from '../data/contentStore';
+import { CONTENT_EVENT, getManagedFamily, hydrateManagedContent, ManagedFamilyMember } from '../data/contentStore';
 
 export const Team: React.FC = () => {
   const [members, setMembers] = useState<ManagedFamilyMember[]>(getManagedFamily);
   const [selected, setSelected] = useState<ManagedFamilyMember | null>(null);
   const [filter, setFilter] = useState('all');
-  useEffect(() => { const update = () => setMembers(getManagedFamily()); window.addEventListener(CONTENT_EVENT, update); return () => window.removeEventListener(CONTENT_EVENT, update); }, []);
+  useEffect(() => { const update = () => setMembers(getManagedFamily()); void hydrateManagedContent(); window.addEventListener(CONTENT_EVENT, update); return () => window.removeEventListener(CONTENT_EVENT, update); }, []);
   const categories = useMemo(() => ['all', ...Array.from(new Set(members.map((member) => member.category)))], [members]);
   const visible = filter === 'all' ? members : members.filter((member) => member.category === filter);
   const active = selected ?? visible[0];
