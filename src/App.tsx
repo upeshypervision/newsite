@@ -13,18 +13,22 @@ import { AdminPanel } from './components/AdminPanel';
 const About = lazy(() => import('./components/About').then(m => ({ default: m.About })));
 const Projects = lazy(() => import('./components/Projects').then(m => ({ default: m.Projects })));
 const EventsAndTimeline = lazy(() => import('./components/EventsAndTimeline').then(m => ({ default: m.EventsAndTimeline })));
-const WhyHypervision = lazy(() => import('./components/WhyHypervision').then(m => ({ default: m.WhyHypervision })));
 const Gallery = lazy(() => import('./components/Gallery').then(m => ({ default: m.Gallery })));
 const Team = lazy(() => import('./components/Team').then(m => ({ default: m.Team })));
 const Partners = lazy(() => import('./components/Partners').then(m => ({ default: m.Partners })));
 const Footer = lazy(() => import('./components/Footer').then(m => ({ default: m.Footer })));
 const JoinModal = lazy(() => import('./components/JoinModal').then(m => ({ default: m.JoinModal })));
+const EventsArchive = lazy(() => import('./components/EventsArchive').then(m => ({ default: m.EventsArchive })));
 
 export default function App() {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
 
   if (window.location.pathname === '/admin') {
     return <AdminPanel />;
+  }
+
+  if (window.location.pathname === '/events') {
+    return <EventsArchive />;
   }
 
   const handleOpenJoin = () => {
@@ -64,11 +68,7 @@ export default function App() {
           </LazyReveal>
 
           <LazyReveal>
-            <WhyHypervision />
-          </LazyReveal>
-
-          <LazyReveal>
-            <Gallery />
+            <Partners />
           </LazyReveal>
 
           <LazyReveal>
@@ -76,7 +76,7 @@ export default function App() {
           </LazyReveal>
 
           <LazyReveal>
-            <Partners />
+            <Gallery />
           </LazyReveal>
         </Suspense>
       </main>

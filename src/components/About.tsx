@@ -7,7 +7,7 @@ export const About: React.FC = () => (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
         <div className="lg:col-span-4">
           <p className="section-kicker">02 — The club</p>
-          <h2 className="section-title">Who we<br /><em className="text-[#9bbcff]">are.</em></h2>
+          <h2 className="section-title">Who we<br /><em className="text-[#22d3ee]">are.</em></h2>
         </div>
         <div className="lg:col-span-8 lg:pt-12">
           <p className="font-display text-[clamp(31px,4vw,54px)] leading-[1.02] text-white max-w-3xl">A technical club with a point of view: make things, make them well, and make room for the next person.</p>

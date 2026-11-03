@@ -6,7 +6,7 @@
     --paper: #f2f0eb;
     --muted: #a5a7ad;
     --line: rgba(255, 255, 255, 0.14);
-    --blue: #9bbcff;
+    --blue: #22d3ee;
     --font-display: 'Instrument Serif', Georgia, serif;
     --font-sans: 'DM Sans', system-ui, sans-serif;
     --font-mono: 'IBM Plex Mono', monospace;
@@ -31,6 +31,7 @@
 .section-kicker { color: var(--blue); font: 500 11px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; }
 .section-title { margin: 14px 0 0; color: white; font-size: clamp(42px, 6vw, 86px); line-height: .92; letter-spacing: -.04em; }
 .section-intro { max-width: 390px; color: #aeb0b5; font-size: 14px; line-height: 1.7; }
+.glass-nav { background: rgba(16,17,20,.88); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(255,255,255,.14); }
 .rule { border-color: var(--line); }
 .editorial-button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; border: 1px solid rgba(255,255,255,.38); color: white; text-decoration: none; font: 500 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; transition: background .2s, color .2s, border .2s; }
 .editorial-button:hover { background: white; color: var(--ink); border-color: white; }
@@ -44,13 +45,40 @@
 .photo-mono { filter: grayscale(100%) contrast(1.05); }
 
 .family-card { position: relative; overflow: hidden; background: #17191e; border: 1px solid var(--line); transition: transform .35s ease, border-color .35s ease, opacity .35s ease; }
-.family-card:hover, .family-card.active { transform: translateY(-8px); border-color: rgba(155,188,255,.8); }
+.family-card:hover, .family-card.active { transform: translateY(-8px); border-color: rgba(34,211,238,.8); }
 .family-card img { transition: transform .6s cubic-bezier(.16,1,.3,1), filter .4s; }
 .family-card:hover img, .family-card.active img { transform: scale(1.08); filter: grayscale(20%); }
 .family-card::after { content: ''; position: absolute; inset: auto 0 0; height: 45%; background: linear-gradient(transparent, rgba(10,11,14,.9)); pointer-events: none; }
+.family-hierarchy { display: grid; gap: 18px; }
+.family-row { display: grid; gap: 10px; }
+.family-row.faculty { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 420px; margin: 0 auto; }
+.family-row.leadership { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 680px; margin: 0 auto; }
+.family-row.departments { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.family-row.members { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.family-stage { position: relative; }
+.family-stage::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 45%, rgba(34,211,238,.09), transparent 52%); pointer-events: none; }
+.family-detail { min-height: 470px; background: rgba(20,22,28,.82); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(16px); }
+.family-detail-image { width: 42%; height: 100%; min-height: 470px; object-fit: cover; filter: grayscale(100%); }
+.family-detail-copy { flex: 1; padding: 42px 34px; }
 .partner-track { animation: partner-scroll 28s linear infinite; width: max-content; }
 .partner-track:hover { animation-play-state: paused; }
 @keyframes partner-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.event-card-current img { filter: grayscale(0) contrast(1.05); }
+.event-card-past { background: #dedbd2; color: #141518; }
+.event-card-past img { filter: grayscale(100%) contrast(.9); mix-blend-mode: multiply; }
+.event-card-past .event-muted { color: #5f6061; }
+.event-card-past .event-title { color: #141518; }
+
+@media (max-width: 900px) {
+  .family-row.members { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .family-row.departments { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .family-row.faculty, .family-row.leadership, .family-row.departments, .family-row.members { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none; }
+  .family-detail-image { width: 38%; min-height: 320px; }
+  .family-detail-copy { padding: 24px 18px; }
+}
 
 .admin-shell { min-height: 100vh; background: #e9e7e1; color: #17181b; }
 .admin-input { width: 100%; border: 1px solid #c6c4bd; background: #f8f7f3; color: #17181b; padding: 11px 12px; outline: none; }

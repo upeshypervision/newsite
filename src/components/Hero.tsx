@@ -10,7 +10,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => (
       <div className="max-w-5xl">
         <p className="section-kicker mb-8">01 — School of Computer Science / UPES / Est. 2011</p>
         <h1 className="font-display text-[clamp(76px,14vw,190px)] leading-[.78] tracking-[-.065em] text-white">
-          Build<br /><em className="text-[#a9b1c2]">what&apos;s</em><br /><span className="text-[#9bbcff]">next.</span>
+          Build<br /><em className="text-[#a9b1c2]">what&apos;s</em><br /><span className="text-[#22d3ee]">next.</span>
         </h1>
         <div className="mt-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
           <p className="md:col-span-6 max-w-xl text-[17px] leading-[1.65] text-[#c1c3c8]">
