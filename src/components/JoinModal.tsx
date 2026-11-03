@@ -1,10 +1,117 @@
 import React, { useState } from 'react';
 
-interface JoinModalProps { isOpen: boolean; onClose: () => void; }
+interface JoinModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 export const JoinModal: React.FC<JoinModalProps> = ({ isOpen, onClose }) => {
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState('');
+
   if (!isOpen) return null;
-  return <div className="fixed inset-0 z-50 bg-[#101114]/95 p-5 sm:p-10 overflow-y-auto" onClick={onClose}><div className="max-w-xl mx-auto pt-8" onClick={(event) => event.stopPropagation()}><div className="flex justify-between items-start border-b rule pb-5"><div><p className="section-kicker">Hypervision / Applications</p><h2 className="mt-3 font-display text-5xl text-white">Come build<br /><em className="text-[#22d3ee]">with us.</em></h2></div><button onClick={onClose} className="text-[10px] font-mono uppercase tracking-widest text-[#92949c] hover:text-white">Close</button></div>{submitted ? <div className="py-16"><p className="section-kicker">Application received</p><h3 className="mt-4 font-display text-4xl text-white">Thanks, {name}.</h3><p className="mt-4 text-[#aeb0b6]">We&apos;ll be in touch with the next step.</p><button className="editorial-button primary mt-8" onClick={onClose}>Return to site</button></div> : <form className="pt-8 space-y-5" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}><label className="block"><span className="admin-label text-[#92949c]">Full name</span><input required value={name} onChange={(event) => setName(event.target.value)} className="w-full bg-transparent border border-white/20 p-3 text-white outline-none focus:border-[#22d3ee]" /></label><label className="block"><span className="admin-label text-[#92949c]">UPES email</span><input required type="email" className="w-full bg-transparent border border-white/20 p-3 text-white outline-none focus:border-[#22d3ee]" /></label><label className="block"><span className="admin-label text-[#92949c]">What do you want to work on?</span><select className="w-full bg-[#17181b] border border-white/20 p-3 text-white outline-none"><option>Engineering and systems</option><option>Design and creative direction</option><option>Events and operations</option><option>Partnerships and outreach</option></select></label><label className="block"><span className="admin-label text-[#92949c]">A little about you</span><textarea rows={5} className="w-full bg-transparent border border-white/20 p-3 text-white outline-none focus:border-[#22d3ee]" /></label><button type="submit" className="editorial-button primary">Submit application</button></form>}</div></div>;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-[#02060c]/90 backdrop-blur-md p-5 sm:p-10 overflow-y-auto flex items-center justify-center"
+      onClick={onClose}
+    >
+      <div
+        className="max-w-xl w-full bg-[#081322] border border-[#1ab7f2]/40 p-6 sm:p-10 relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-start border-b border-white/10 pb-5">
+          <div>
+            <p className="section-kicker">Society Recruitment &bull; Cohort 2026</p>
+            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-white">
+              Come build<br />
+              <span className="text-[#1ab7f2]">with Hypervision.</span>
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-[11px] font-mono uppercase tracking-widest text-[#788e9f] hover:text-white border border-white/20 px-3 py-1.5"
+          >
+            Close
+          </button>
+        </div>
+
+        {submitted ? (
+          <div className="py-12">
+            <span className="text-xs font-mono uppercase tracking-[.18em] text-[#1ab7f2] font-semibold block mb-2">
+              Application Dispatched
+            </span>
+            <h3 className="font-display text-3xl font-bold text-white">
+              Thank you, {name}.
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-[#8fa2b6]">
+              Your registration has been logged with the Hypervision Executive Board. We will review your track preferences and follow up via student email.
+            </p>
+            <button
+              className="editorial-button primary mt-8"
+              onClick={onClose}
+            >
+              Return to Website
+            </button>
+          </div>
+        ) : (
+          <form
+            className="pt-6 space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSubmitted(true);
+            }}
+          >
+            <label className="block">
+              <span className="admin-label">Full Legal Name</span>
+              <input
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Purva Monga"
+                className="admin-input"
+              />
+            </label>
+
+            <label className="block">
+              <span className="admin-label">UPES Student Email Address</span>
+              <input
+                required
+                type="email"
+                placeholder="username@stu.upes.ac.in"
+                className="admin-input"
+              />
+            </label>
+
+            <label className="block">
+              <span className="admin-label">Target Technical Track</span>
+              <select className="admin-input">
+                <option>Engineering &amp; Distributed Systems</option>
+                <option>AI / Machine Learning &amp; Computer Vision</option>
+                <option>Autonomous Drones &amp; Embedded Firmware</option>
+                <option>Visual Systems &amp; Brand Creative Direction</option>
+                <option>Hackathon Operations &amp; Event Infrastructure</option>
+                <option>Institutional PR &amp; Ecosystem Alliances</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="admin-label">Prior Projects or Motivation (GitHub, Portfolio, or Summary)</span>
+              <textarea
+                rows={4}
+                placeholder="Share working projects you built, technologies you explore, or what you want to achieve with Hypervision..."
+                className="admin-input resize-y"
+              />
+            </label>
+
+            <div className="pt-2">
+              <button type="submit" className="editorial-button primary w-full text-center">
+                Submit Society Application
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
 };

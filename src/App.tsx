@@ -13,6 +13,7 @@ import { AdminPanel } from './components/AdminPanel';
 const About = lazy(() => import('./components/About').then(m => ({ default: m.About })));
 const Projects = lazy(() => import('./components/Projects').then(m => ({ default: m.Projects })));
 const EventsAndTimeline = lazy(() => import('./components/EventsAndTimeline').then(m => ({ default: m.EventsAndTimeline })));
+const Team = lazy(() => import('./components/Team').then(m => ({ default: m.Team })));
 const Gallery = lazy(() => import('./components/Gallery').then(m => ({ default: m.Gallery })));
 const Partners = lazy(() => import('./components/Partners').then(m => ({ default: m.Partners })));
 const Footer = lazy(() => import('./components/Footer').then(m => ({ default: m.Footer })));
@@ -39,12 +40,6 @@ export default function App() {
 
   return (
     <div id="top" className="site-shell min-h-screen flex flex-col relative overflow-x-hidden">
-
-      {/* Background ambient glass refraction light sources */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute inset-0 hero-glow" />
-      </div>
-
       {/* Top sticky navigation bar */}
       <Navbar onOpenJoin={handleOpenJoin} />
 
@@ -70,13 +65,17 @@ export default function App() {
           </LazyReveal>
 
           <LazyReveal>
+            <Team />
+          </LazyReveal>
+
+          <LazyReveal>
             <Gallery />
           </LazyReveal>
         </Suspense>
       </main>
 
       {/* Lazy Loaded Footer */}
-      <Suspense fallback={<div className="h-32 bg-neutral-950 border-t border-white/[0.08]" />}>
+      <Suspense fallback={<div className="h-32 bg-[#050c16] border-t border-white/10" />}>
         <Footer />
       </Suspense>
 
