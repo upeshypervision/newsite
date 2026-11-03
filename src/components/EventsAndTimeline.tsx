@@ -11,6 +11,7 @@ const EventCard = ({ event }: { event: ManagedEvent }) => {
       <div className={`absolute inset-0 ${current ? 'bg-gradient-to-t from-[#101114] via-transparent to-transparent' : 'bg-gradient-to-t from-[#dedbd2] via-transparent to-transparent'}`} />
       <span className={`absolute top-4 left-4 text-[10px] font-mono uppercase tracking-widest ${current ? 'text-white' : 'text-[#353638]'}`}>{event.month} / {event.year}</span>
       {current && <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-[#22d3ee]">Ongoing</span>}
+      {!current && <span className="absolute top-4 right-4 text-[10px] font-mono uppercase tracking-widest text-[#353638]">Ended</span>}
     </div>
     <div className="p-5 sm:p-6">
       <p className={`text-[10px] font-mono uppercase tracking-widest ${current ? 'text-[#22d3ee]' : 'event-muted'}`}>{event.category}</p>

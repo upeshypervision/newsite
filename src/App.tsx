@@ -14,22 +14,15 @@ const About = lazy(() => import('./components/About').then(m => ({ default: m.Ab
 const Projects = lazy(() => import('./components/Projects').then(m => ({ default: m.Projects })));
 const EventsAndTimeline = lazy(() => import('./components/EventsAndTimeline').then(m => ({ default: m.EventsAndTimeline })));
 const Gallery = lazy(() => import('./components/Gallery').then(m => ({ default: m.Gallery })));
-const Team = lazy(() => import('./components/Team').then(m => ({ default: m.Team })));
 const Partners = lazy(() => import('./components/Partners').then(m => ({ default: m.Partners })));
 const Footer = lazy(() => import('./components/Footer').then(m => ({ default: m.Footer })));
 const JoinModal = lazy(() => import('./components/JoinModal').then(m => ({ default: m.JoinModal })));
 const EventsArchive = lazy(() => import('./components/EventsArchive').then(m => ({ default: m.EventsArchive })));
+const BoardPage = lazy(() => import('./components/BoardPage').then(m => ({ default: m.BoardPage })));
+const PrivacyPage = lazy(() => import('./components/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
 
 export default function App() {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
-
-  if (window.location.pathname === '/admin') {
-    return <AdminPanel />;
-  }
-
-  if (window.location.pathname === '/events') {
-    return <EventsArchive />;
-  }
 
   const handleOpenJoin = () => {
     setIsJoinModalOpen(true);
@@ -39,8 +32,13 @@ export default function App() {
     setIsJoinModalOpen(false);
   };
 
+  if (window.location.pathname === '/admin') return <AdminPanel />;
+  if (window.location.pathname === '/events') return <EventsArchive />;
+  if (window.location.pathname === '/board') return <BoardPage onOpenJoin={handleOpenJoin} />;
+  if (window.location.pathname === '/privacy') return <PrivacyPage />;
+
   return (
-    <div className="site-shell min-h-screen flex flex-col relative overflow-x-hidden">
+    <div id="top" className="site-shell min-h-screen flex flex-col relative overflow-x-hidden">
 
       {/* Background ambient glass refraction light sources */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
@@ -56,6 +54,10 @@ export default function App() {
 
         <Suspense fallback={null}>
           <LazyReveal>
+            <Partners />
+          </LazyReveal>
+
+          <LazyReveal>
             <About />
           </LazyReveal>
 
@@ -65,14 +67,6 @@ export default function App() {
 
           <LazyReveal>
             <EventsAndTimeline onOpenJoin={handleOpenJoin} />
-          </LazyReveal>
-
-          <LazyReveal>
-            <Partners />
-          </LazyReveal>
-
-          <LazyReveal>
-            <Team />
           </LazyReveal>
 
           <LazyReveal>

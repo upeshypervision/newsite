@@ -43,6 +43,10 @@
 .hero-glow { background: radial-gradient(circle at 72% 28%, rgba(76, 116, 191, .25), transparent 34%), radial-gradient(circle at 10% 90%, rgba(50, 64, 105, .18), transparent 28%); }
 .hero-grid { background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 72px 72px; mask-image: linear-gradient(to bottom, rgba(0,0,0,.7), transparent); }
 .photo-mono { filter: grayscale(100%) contrast(1.05); }
+.project-card { display: block; width: 100%; transition: transform .3s ease, filter .3s ease; }
+.project-card:hover { transform: translateY(-8px); }
+.project-card-image { border: 1px solid rgba(255,255,255,.15); border-bottom: 0; }
+.project-card-body { min-height: 265px; background: #14161a; }
 
 .family-card { position: relative; overflow: hidden; background: #17191e; border: 1px solid var(--line); transition: transform .35s ease, border-color .35s ease, opacity .35s ease; }
 .family-card:hover, .family-card.active { transform: translateY(-8px); border-color: rgba(34,211,238,.8); }
@@ -64,8 +68,10 @@
 .partner-track:hover { animation-play-state: paused; }
 @keyframes partner-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
+.event-card-current, .event-card-past { transition: transform .3s ease, box-shadow .3s ease; }
+.event-card-current:hover, .event-card-past:hover { transform: translateY(-8px); box-shadow: 0 18px 35px rgba(0,0,0,.2); }
 .event-card-current img { filter: grayscale(0) contrast(1.05); }
-.event-card-past { background: #dedbd2; color: #141518; }
+.event-card-past { background: #dedbd2; color: #141518; border: 1px solid #c0bdb4; }
 .event-card-past img { filter: grayscale(100%) contrast(.9); mix-blend-mode: multiply; }
 .event-card-past .event-muted { color: #5f6061; }
 .event-card-past .event-title { color: #141518; }

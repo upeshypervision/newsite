@@ -11,7 +11,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-  const links = [['About', '#about'], ['Work', '#projects'], ['Events', '#events'], ['Family', '#team'], ['Partners', '#sponsors']];
+  const links = [['About', '#about'], ['Work', '#projects'], ['Events', '#events'], ['Board', '/board'], ['Partners', '#sponsors']];
   return (
     <header className={`fixed z-40 top-0 inset-x-0 transition-colors ${scrolled ? 'glass-nav' : 'bg-[#101114]/45'}`}>
       <div className="section-wrap h-[72px] flex items-center justify-between">
