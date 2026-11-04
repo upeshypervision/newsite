@@ -9,7 +9,7 @@ interface PhotoItem {
   time: string;
   location: string;
   tag: string;
-  aspect?: string;
+  tapeRotation?: string;
 }
 
 const ARENA_PHOTOS: PhotoItem[] = [
@@ -61,7 +61,7 @@ const ARENA_PHOTOS: PhotoItem[] = [
   {
     id: 'sih-hall',
     image: '/events/sih_1.webp',
-    title: '330-Team Smart India Hackathon Qualifier',
+    title: '330-Team SIH Qualifier',
     caption: 'The massive national round qualifier processed by Hypervision’s automated scoring matrix.',
     time: '04:20 PM',
     location: 'School of Computer Science',
@@ -77,7 +77,7 @@ export const Gallery: React.FC = () => {
       <div className="section-wrap">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b rule">
           <div>
-            <p className="section-kicker">05 // Real Atmosphere</p>
+            <p className="section-kicker">05 // Visual Field Archive</p>
             <h2 className="section-title">
               In the<br />
               <span className="text-[#1ab7f2]">arena.</span>
@@ -87,75 +87,70 @@ export const Gallery: React.FC = () => {
             <p className="section-intro">
               No stock graphics. 3 AM terminal screens, hardware benches, MAC Auditorium late nights, and fifteen years of campus builder culture.
             </p>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#788e9f]">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#788e9f]">
               Coordinates: 30°24&apos;58&quot;N 77°58&apos;11&quot;E &bull; UPES Bidholi
             </span>
           </div>
         </div>
 
-        {/* Hack Club-style Scrapbook Photo Grid */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+        {/* Real Polaroid Photo Wall (FULL VIVID COLOR - NO BLACK & WHITE) */}
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8">
           {ARENA_PHOTOS.map((item, idx) => {
-            // Subtle alternating rotation angles for authentic scrapbook feel
             const rotationClass =
               idx % 3 === 0
-                ? 'sm:-rotate-1 hover:rotate-0'
+                ? 'sm:-rotate-2 hover:rotate-0'
                 : idx % 3 === 1
-                ? 'sm:rotate-1 hover:rotate-0'
-                : 'sm:-rotate-0.5 hover:rotate-0';
+                ? 'sm:rotate-2 hover:rotate-0'
+                : 'sm:-rotate-1 hover:rotate-0';
 
             return (
               <div
                 key={item.id}
-                className={`transition-transform duration-300 ${rotationClass}`}
+                className={`transition-all duration-300 ${rotationClass} group`}
               >
-                <TiltCard maxTilt={7} className="h-full">
+                <TiltCard maxTilt={8} className="h-full">
+                  {/* Real Classic Polaroid Card: White frame, thick bottom chin, 3D physics */}
                   <div
                     onClick={() => setSelectedPhoto(item)}
-                    className="group bg-[#071322] border border-white/10 hover:border-[#1ab7f2] p-3.5 sm:p-4 rounded-2xl flex flex-col justify-between h-full cursor-pointer transition-all duration-300 shadow-xl hover:shadow-[0_20px_40px_rgba(26,183,242,0.15)]"
+                    className="bg-[#f8fafc] text-[#0f172a] p-3.5 pb-5 rounded-lg shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_25px_50px_rgba(26,183,242,0.3)] transition-all cursor-pointer relative"
                   >
-                    {/* Image frame */}
-                    <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] border border-white/5 rounded-xl">
+                    {/* Top tape sticker accent */}
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-5 bg-[#1ab7f2]/30 backdrop-blur-sm border border-white/40 shadow-sm transform -rotate-1 rounded-sm pointer-events-none" />
+
+                    {/* Image frame in FULL VIVID COLOR */}
+                    <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] rounded-sm">
                       <img
                         src={item.image}
                         alt={item.title}
-                        className="w-full h-full object-cover grayscale contrast-110 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#071322] via-transparent to-transparent opacity-60" />
 
-                      {/* Monospace Timestamp Tag */}
-                      <div className="absolute top-2.5 left-2.5 bg-[#050c16]/90 border border-white/10 px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider text-white">
-                        {item.time}
-                      </div>
-
-                      {/* Tag pill */}
-                      <div className="absolute top-2.5 right-2.5 bg-[#0a1b2e]/90 border border-[#1ab7f2]/40 px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider text-[#1ab7f2]">
+                      {/* Cyan corner tag */}
+                      <span className="absolute top-2 right-2 bg-[#020813]/90 text-[#1ab7f2] font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#1ab7f2]/40 font-bold">
                         {item.tag}
-                      </div>
+                      </span>
 
-                      <div className="absolute bottom-2 left-2.5 text-[9px] font-mono uppercase tracking-widest text-[#8fa2b6]">
-                        {item.location}
-                      </div>
+                      {/* Timestamp tag */}
+                      <span className="absolute bottom-2 left-2 bg-[#020813]/90 text-white font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full">
+                        {item.time}
+                      </span>
                     </div>
 
-                    {/* Polaroid-style caption strip */}
-                    <div className="mt-3.5 pt-2 border-t border-white/5 flex flex-col justify-between flex-1">
+                    {/* Classic Polaroid Bottom Chin */}
+                    <div className="mt-3.5 pt-1 px-1 flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="font-display text-base sm:text-lg font-bold text-white group-hover:text-[#1ab7f2] transition-colors leading-snug">
+                        <h3 className="font-display font-bold text-sm sm:text-base text-[#0f172a] leading-snug">
                           {item.title}
                         </h3>
-                        <p className="mt-1 text-xs leading-relaxed text-[#788e9f] line-clamp-2">
-                          {item.caption}
+                        <p className="mt-1 text-[11px] font-mono text-[#475569] line-clamp-1">
+                          {item.location} &bull; Field Archive
                         </p>
                       </div>
 
-                      <div className="mt-3 flex items-center justify-between text-[9px] font-mono uppercase tracking-widest text-[#597187]">
-                        <span>[FIELD LOG #{idx + 1}]</span>
-                        <span className="group-hover:text-[#1ab7f2] transition-colors">
-                          Inspect &rarr;
-                        </span>
-                      </div>
+                      <span className="text-[10px] font-mono text-[#0284c7] font-bold shrink-0 mt-0.5">
+                        Inspect &rarr;
+                      </span>
                     </div>
                   </div>
                 </TiltCard>
@@ -164,17 +159,17 @@ export const Gallery: React.FC = () => {
           })}
         </div>
 
-        {/* Real tape / Scrapbook Banner Footer */}
-        <div className="mt-12 p-4 sm:p-5 border border-white/10 bg-[#060e18] flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Real Tape Banner Footer */}
+        <div className="mt-12 p-4 sm:p-5 border border-white/10 bg-[#060e18] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 bg-[#1ab7f2]" />
-            <p className="text-xs font-mono uppercase tracking-wider text-[#8fa2b6]">
+            <span className="w-2.5 h-2.5 bg-[#1ab7f2] rounded-full animate-pulse" />
+            <p className="text-xs font-mono uppercase tracking-wider text-[#9ab0c4]">
               Campus Photography &bull; 2011 &ndash; 2026 Archive Records &bull; School of Computer Science, UPES
             </p>
           </div>
           <a
             href="/events"
-            className="text-xs font-mono uppercase tracking-widest text-[#1ab7f2] hover:text-white transition-colors"
+            className="editorial-button text-xs font-mono uppercase tracking-widest text-[#1ab7f2] rounded-full !px-5"
           >
             Review Hackathon Chronology &rarr;
           </a>
@@ -188,17 +183,17 @@ export const Gallery: React.FC = () => {
           onClick={() => setSelectedPhoto(null)}
         >
           <div
-            className="max-w-4xl w-full bg-[#071322] border border-[#1ab7f2]/50 p-6 sm:p-8 relative shadow-2xl"
+            className="max-w-4xl w-full bg-[#071322] border border-[#1ab7f2]/50 p-6 sm:p-8 rounded-3xl relative shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setSelectedPhoto(null)}
-              className="absolute top-4 right-4 text-xs font-mono uppercase tracking-wider text-[#788e9f] hover:text-white px-2 py-1 border border-white/10"
+              className="absolute top-4 right-4 text-xs font-mono uppercase tracking-wider text-[#788e9f] hover:text-white px-3 py-1 border border-white/10 rounded-full"
             >
-              [Close ✕]
+              [Close &times;]
             </button>
 
-            <div className="relative aspect-[16/10] overflow-hidden bg-black border border-white/10 mt-6 sm:mt-2">
+            <div className="relative aspect-[16/10] overflow-hidden bg-black border border-white/10 rounded-2xl mt-6 sm:mt-2">
               <img
                 src={selectedPhoto.image}
                 alt={selectedPhoto.title}
@@ -208,19 +203,19 @@ export const Gallery: React.FC = () => {
 
             <div className="mt-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-t border-white/10 pt-4">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-[.18em] text-[#1ab7f2]">
+                <span className="text-[10px] font-mono uppercase tracking-[.18em] text-[#1ab7f2] font-bold">
                   {selectedPhoto.tag} // {selectedPhoto.time} // {selectedPhoto.location}
                 </span>
                 <h3 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-white">
                   {selectedPhoto.title}
                 </h3>
-                <p className="mt-2 text-sm text-[#8fa2b6] max-w-2xl leading-relaxed">
+                <p className="mt-2 text-sm text-[#9ab0c4] max-w-2xl leading-relaxed">
                   {selectedPhoto.caption}
                 </p>
               </div>
 
               <span className="text-[10px] font-mono uppercase tracking-widest text-[#597187]">
-                UPES Hypervision Archive
+                UPES Hypervision Archive Records
               </span>
             </div>
           </div>

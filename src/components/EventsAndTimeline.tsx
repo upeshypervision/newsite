@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CONTENT_EVENT, getManagedEvents, hydrateManagedContent, ManagedEvent } from '../data/contentStore';
 import { TiltCard } from './TiltCard';
 
@@ -9,6 +9,7 @@ interface EventsProps {
 export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
   const [events, setEvents] = useState<ManagedEvent[]>(getManagedEvents);
   const [selectedEvent, setSelectedEvent] = useState<ManagedEvent | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const update = () => setEvents(getManagedEvents());
@@ -25,101 +26,135 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const displayEvents = events.slice(0, 4);
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = 340;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   return (
-    <section id="events" className="site-section py-20 sm:py-28 bg-[#030611] text-white">
+    <section id="events" className="site-section py-20 sm:py-28 bg-[#030611] text-white overflow-hidden">
       <div className="section-wrap">
-        {/* Header */}
-        <div className="max-w-2xl mx-auto text-center mb-12">
-          <p className="text-xs font-mono uppercase tracking-[.2em] text-[#1ab7f2] font-semibold mb-2">
-            03 // Programs &amp; Flagships
-          </p>
-          <h2 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-            Imagine a room where<br />
-            <span className="text-[#1ab7f2]">you built this:</span>
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-[#8fa2b6] leading-relaxed">
-            Every event below is student-engineered, open to all UPES cohorts, and happening right now. Click any card to inspect full track details.
-          </p>
+        {/* Header with Horizontal Scroll Controls */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b rule mb-8">
+          <div>
+            <p className="section-kicker">03 // Programs &amp; Flagships</p>
+            <h2 className="section-title">
+              Imagine a room where<br />
+              <span className="text-[#1ab7f2]">you built this:</span>
+            </h2>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between md:justify-end gap-4">
+            <p className="text-xs sm:text-sm text-[#8fa2b6] max-w-sm">
+              Full-bleed flagship posters. Scroll horizontally to browse all hackathons, bootcamps, and symposia.
+            </p>
+
+            {/* Scroll navigation arrows */}
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => handleScroll('left')}
+                className="w-10 h-10 rounded-full border border-white/20 hover:border-[#1ab7f2] bg-[#071322] flex items-center justify-center text-white hover:text-[#1ab7f2] transition-colors"
+                title="Scroll Left"
+              >
+                &larr;
+              </button>
+              <button
+                onClick={() => handleScroll('right')}
+                className="w-10 h-10 rounded-full border border-white/20 hover:border-[#1ab7f2] bg-[#071322] flex items-center justify-center text-white hover:text-[#1ab7f2] transition-colors"
+                title="Scroll Right"
+              >
+                &rarr;
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* 2x2 HACK CLUB EXACT CARDS (Matched from reference screenshot Image 2) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {displayEvents.map((event) => {
+        {/* HORIZONTAL SCROLLING POSTER CARDS TRACK (Exact match to uploaded screenshot Image 1) */}
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {events.map((event) => {
             const isUpcoming = event.isUpcoming;
             return (
-              <TiltCard key={event.id} maxTilt={6} className="h-full">
-                <article
-                  onClick={() => setSelectedEvent(event)}
-                  className="group relative overflow-hidden bg-[#071322] border border-white/10 hover:border-[#1ab7f2] rounded-2xl p-6 flex flex-col justify-between h-full min-h-[220px] cursor-pointer transition-all duration-300 shadow-xl hover:shadow-[0_20px_45px_rgba(26,183,242,0.18)]"
-                >
-                  {/* Visual Background Banner Overlay */}
-                  <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity pointer-events-none overflow-hidden">
+              <div
+                key={event.id}
+                className="w-[280px] sm:w-[320px] shrink-0 snap-start"
+              >
+                <TiltCard maxTilt={8} className="h-full">
+                  <article
+                    onClick={() => setSelectedEvent(event)}
+                    className="group relative aspect-[9/13] rounded-3xl overflow-hidden border border-white/10 hover:border-[#1ab7f2] cursor-pointer shadow-2xl transition-all duration-300 flex flex-col justify-between p-6 text-left"
+                  >
+                    {/* Full-bleed poster image in natural color */}
                     <img
                       src={event.image}
                       alt={event.title}
-                      className="w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#071322] via-[#071322]/85 to-transparent" />
-                  </div>
 
-                  {/* Card Content Top */}
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#1ab7f2] font-bold">
+                    {/* Gradient overlay for bottom readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#02050c] via-[#02050c]/60 to-transparent" />
+
+                    {/* Top status & category tag */}
+                    <div className="relative z-10 flex items-center justify-between gap-2">
+                      <span className="bg-[#050c18]/90 text-[#1ab7f2] border border-[#1ab7f2]/40 font-mono text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full font-bold">
                         {event.category}
                       </span>
+                      {isUpcoming ? (
+                        <span className="bg-[#1ab7f2] text-[#020813] font-bold text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow">
+                          <span className="w-1.5 h-1.5 bg-[#020813] rounded-full animate-ping" />
+                          Live Track
+                        </span>
+                      ) : (
+                        <span className="bg-white text-[#020813] font-bold text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow">
+                          Ended
+                        </span>
+                      )}
                     </div>
 
-                    <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white group-hover:text-[#1ab7f2] transition-colors leading-tight">
-                      {event.title}
-                    </h3>
+                    {/* Bottom Content Area (Exact layout from user screenshot) */}
+                    <div className="relative z-10">
+                      <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white group-hover:text-[#1ab7f2] transition-colors leading-tight">
+                        {event.title}
+                      </h3>
 
-                    <p className="mt-2 text-xs sm:text-sm text-[#9ab0c4] leading-relaxed line-clamp-2">
-                      {event.description}
-                    </p>
+                      <p className="mt-1 text-xs text-[#9ab0c4] line-clamp-2 leading-relaxed">
+                        {event.subtitle || event.description}
+                      </p>
 
-                    <p className="mt-1 text-[11px] font-mono text-[#597187]">
-                      {event.location} &bull; {event.teamsOrAttendees || 'Open Track'}
-                    </p>
-                  </div>
+                      <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-white group-hover:text-[#1ab7f2] transition-colors">
+                          Dive In <span className="text-sm">&nearr;</span>
+                        </span>
 
-                  {/* Bottom Bar: Curvy Button on left, White Pill on right (Image 2 Match) */}
-                  <div className="relative z-10 mt-6 pt-3 border-t border-white/10 flex items-center justify-between gap-3">
-                    <div>
-                      <button
-                        type="button"
-                        className="rounded-full bg-[#1ab7f2] hover:bg-white text-[#020813] font-bold text-xs px-5 py-2 transition-all shadow-md"
-                      >
-                        {isUpcoming ? 'Start now \u2192' : 'See the site \u2192'}
-                      </button>
-                      <span className="block text-[9px] font-mono text-[#597187] mt-1">
-                        {isUpcoming ? 'Live discussions active' : 'Archived track specs'}
-                      </span>
+                        <span className="text-[10px] font-mono text-[#8fa2b6]">
+                          {event.month} {event.year}
+                        </span>
+                      </div>
                     </div>
-
-                    {/* Hack Club style Status Pill Badge */}
-                    <div className="bg-white text-[#020813] font-bold text-[10px] font-mono uppercase tracking-wider px-3.5 py-1 rounded-full shadow">
-                      {isUpcoming ? 'Upcoming' : 'Ended'}
-                    </div>
-                  </div>
-                </article>
-              </TiltCard>
+                  </article>
+                </TiltCard>
+              </div>
             );
           })}
         </div>
 
         {/* Footer Prompt */}
-        <div className="mt-12 text-center">
-          <p className="text-xs text-[#788e9f] mb-3">
-            Looking for older cohorts, symposia, or bootcamps?
-          </p>
+        <div className="mt-10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 text-xs font-mono uppercase tracking-wider text-[#788e9f]">
+          <span>{events.length} Historical &amp; Active Flagships Available</span>
           <a
             href="/events"
-            className="editorial-button text-xs font-mono uppercase tracking-widest inline-block rounded-full !px-6"
+            className="editorial-button text-xs font-mono uppercase tracking-widest text-[#1ab7f2] rounded-full !px-5"
           >
-            Explore all 15 years of archives &rarr;
+            Explore Full Event Archive &rarr;
           </a>
         </div>
       </div>
