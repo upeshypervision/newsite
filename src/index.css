@@ -156,6 +156,53 @@
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45);
 }
 
+/* Hack Club-inspired signature styling */
+.hack-flag {
+  background: var(--blue);
+  color: #020813;
+  font-family: var(--font-display);
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px 8px 14px;
+  clip-path: polygon(0 0, 100% 0, 90% 50%, 100% 100%, 0 100%);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.hack-flag:hover {
+  transform: rotate(-2deg) scale(1.05);
+  background: #ffffff;
+}
+
+.airmail-box {
+  background: #081322;
+  border: 2px dashed rgba(26, 183, 242, 0.5);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.airmail-box:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+
+.scatter-card {
+  background: #081322;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.scatter-card:hover {
+  transform: rotate(0deg) scale(1.08) !important;
+  z-index: 30;
+  border-color: var(--blue);
+  box-shadow: 0 20px 45px rgba(26, 183, 242, 0.3);
+}
+
 .photo-mono {
   filter: grayscale(100%) contrast(1.08);
   transition: filter .3s ease;

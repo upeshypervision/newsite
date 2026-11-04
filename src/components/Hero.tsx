@@ -1,185 +1,235 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { HYPERVISION_INFO } from '../data/hypervisionData';
-import { CONTENT_EVENT, getManagedEvents, hydrateManagedContent, ManagedEvent } from '../data/contentStore';
-import { TiltCard } from './TiltCard';
 
 interface HeroProps {
   onOpenJoin: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
-  const [events, setEvents] = useState<ManagedEvent[]>(getManagedEvents);
+  const [email, setEmail] = useState('');
 
-  useEffect(() => {
-    const update = () => setEvents(getManagedEvents());
-    void hydrateManagedContent();
-    window.addEventListener(CONTENT_EVENT, update);
-    return () => window.removeEventListener(CONTENT_EVENT, update);
-  }, []);
-
-  const event = events.find((item) => item.isUpcoming) ?? events[0];
+  const handleJoin = (e: React.FormEvent) => {
+    e.preventDefault();
+    onOpenJoin();
+  };
 
   const stats = [
     {
       value: '100+',
       label: 'Active Builders',
-      hint: 'Meet the team &rarr;',
       href: '/board',
     },
     {
       value: '50+',
       label: 'Production Systems',
-      hint: 'Explore software &rarr;',
       href: '/#projects',
     },
     {
       value: '30+',
       label: 'Hackathons & Sprints',
-      hint: 'View calendar &rarr;',
       href: '/#events',
     },
     {
       value: '15',
       label: 'Years of Legacy',
-      hint: 'Browse archives &rarr;',
       href: '/events',
     },
   ];
 
   return (
-    <section className="site-section hero-shell relative overflow-hidden pt-28 pb-16 sm:pt-36">
-      {/* High-contrast hacker grid background */}
-      <div className="hero-grid absolute inset-0 pointer-events-none" aria-hidden="true" />
-
-      {/* Atmospheric blue flare */}
+    <section className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28 bg-[#040812] text-white">
+      {/* Background grid */}
       <div
-        className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#1ab7f2]/10 rounded-full blur-3xl pointer-events-none"
+        className="absolute inset-0 bg-[linear-gradient(to_right,#1ab7f20a_1px,transparent_1px),linear-gradient(to_bottom,#1ab7f20a_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none"
         aria-hidden="true"
       />
 
-      <div className="section-wrap relative z-10">
-        {/* Hack Club-style Ribbon Kicker */}
-        <div className="inline-flex items-center gap-3 bg-[#081322] border border-[#1ab7f2]/40 px-3.5 py-1.5 mb-8">
-          <span className="w-2 h-2 bg-[#1ab7f2] animate-ping" />
-          <span className="text-[11px] font-mono uppercase tracking-[.18em] text-[#1ab7f2] font-semibold">
-            By Students, For Builders &bull; Est. 2011
-          </span>
-          <span className="text-white/20">|</span>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#788e9f] hidden sm:inline-block">
-            SoCS, UPES Dehradun
-          </span>
+      {/* Atmospheric center cyan glow */}
+      <div
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-[#1ab7f2]/10 blur-[120px] rounded-full pointer-events-none"
+        aria-hidden="true"
+      />
+
+      {/* LEFT SCATTER PHOTOS (Hack Club Style Frame) */}
+      <div className="hidden lg:block absolute left-3 xl:left-8 top-32 w-64 pointer-events-auto space-y-6 select-none z-10">
+        {/* Top Left: Lab Coding */}
+        <div className="scatter-card p-2 transform -rotate-6 w-56">
+          <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a]">
+            <img
+              src="/gallery/gallery_3.webp"
+              alt="Late night lab sprint"
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-1.5 left-1.5 bg-[#040912]/90 text-[8px] font-mono uppercase tracking-widest text-[#1ab7f2] px-1.5 py-0.5 border border-[#1ab7f2]/30">
+              03:42 AM LABS
+            </span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
-          <div className="lg:col-span-7">
-            <h1 className="hero-display text-white font-bold tracking-tight uppercase">
-              We build.<br />
-              <span className="text-[#1ab7f2]">We ship.</span><br />
-              No fluff<span className="text-[#1ab7f2]">.</span>
-            </h1>
+        {/* Mid Left: Code Hustle */}
+        <div className="scatter-card p-2 transform rotate-3 w-60 ml-4">
+          <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a]">
+            <img
+              src="/events/code_hustle_1.webp"
+              alt="Code Hustle hackathon floor"
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-1.5 left-1.5 bg-[#040912]/90 text-[8px] font-mono uppercase tracking-widest text-white px-1.5 py-0.5 border border-white/20">
+              24H SPRINT FLOOR
+            </span>
+          </div>
+        </div>
 
-            <p className="mt-8 max-w-xl text-base sm:text-lg leading-relaxed text-[#9ab0c4]">
-              UPES Hypervision is an autonomous collective of student software engineers, avionics researchers, and community hackers. We don&apos;t build slide decks&mdash;we build competition arbiters, drone payloads, and production web systems.
-            </p>
+        {/* Bottom Left: Drone Tech */}
+        <div className="scatter-card p-2 transform -rotate-3 w-52">
+          <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a]">
+            <img
+              src="/events/drone_tech.webp"
+              alt="Autonomous drone hardware payload"
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-1.5 left-1.5 bg-[#040912]/90 text-[8px] font-mono uppercase tracking-widest text-[#9edcf8] px-1.5 py-0.5 border border-[#1ab7f2]/30">
+              SWAYAAN AVIONICS
+            </span>
+          </div>
+        </div>
+      </div>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <a href="#events" className="editorial-button primary">
-                Explore Calendar &rarr;
-              </a>
-              <button onClick={onOpenJoin} className="editorial-button">
-                Apply for Membership
-              </button>
-              <a
-                href="https://github.com/upes-hypervision"
-                target="_blank"
-                rel="noreferrer"
-                className="editorial-button text-[#1ab7f2] border-[#1ab7f2]/40 hover:bg-[#1ab7f2] hover:text-[#020813]"
-              >
-                GitHub [Org]
-              </a>
+      {/* RIGHT SCATTER PHOTOS (Hack Club Style Frame) */}
+      <div className="hidden lg:block absolute right-3 xl:right-8 top-32 w-64 pointer-events-auto space-y-6 select-none z-10">
+        {/* Top Right: Winner Podium */}
+        <div className="scatter-card p-2 transform rotate-6 w-56 ml-auto">
+          <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a]">
+            <img
+              src="/gallery/gallery_1.webp"
+              alt="Hackathon winner celebration"
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-1.5 left-1.5 bg-[#040912]/90 text-[8px] font-mono uppercase tracking-widest text-white px-1.5 py-0.5 border border-white/20">
+              STAGE WINNERS
+            </span>
+          </div>
+        </div>
+
+        {/* Mid Right: SIH 330 Teams */}
+        <div className="scatter-card p-2 transform -rotate-4 w-60 mr-4">
+          <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a]">
+            <img
+              src="/events/sih_1.webp"
+              alt="Smart India Hackathon 330 teams"
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-1.5 left-1.5 bg-[#040912]/90 text-[8px] font-mono uppercase tracking-widest text-[#1ab7f2] px-1.5 py-0.5 border border-[#1ab7f2]/30">
+              330 TEAMS ARBITRATION
+            </span>
+          </div>
+        </div>
+
+        {/* Bottom Right: Keynote Hall */}
+        <div className="scatter-card p-2 transform rotate-3 w-52 ml-auto">
+          <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a]">
+            <img
+              src="/gallery/gallery_4.webp"
+              alt="MAC Auditorium symposium"
+              className="w-full h-full object-cover"
+            />
+            <span className="absolute bottom-1.5 left-1.5 bg-[#040912]/90 text-[8px] font-mono uppercase tracking-widest text-white px-1.5 py-0.5 border border-white/20">
+              MAC AUDITORIUM
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* CENTER STAGE HERO CONTENT */}
+      <div className="section-wrap relative z-20 max-w-3xl mx-auto text-center px-4 sm:px-6">
+        {/* Hack Club-style Clean Announcement Link (NO ugly pill box) */}
+        <div className="mb-6">
+          <a
+            href="#events"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-[#c0d4e6] hover:text-white transition-colors group"
+          >
+            <span className="text-amber-300">✨</span>
+            <span>
+              Check out <strong>Code Hustle 24H</strong>, UPES&apos;s flagship hackathon of the season
+            </span>
+            <span className="text-[#1ab7f2] group-hover:translate-x-1 transition-transform">&rarr;</span>
+          </a>
+        </div>
+
+        {/* Iconic Hack Club Bold Headline */}
+        <h1 className="font-display font-black text-5xl sm:text-7xl lg:text-8xl tracking-tight leading-[0.95] text-white">
+          Where students<br />
+          <span className="bg-gradient-to-r from-[#1ab7f2] via-[#38bdf8] to-white bg-clip-text text-transparent">
+            build cool stuff.
+          </span>
+        </h1>
+
+        {/* Punchy Subtitle */}
+        <p className="mt-6 text-base sm:text-lg text-[#9ab0c4] leading-relaxed max-w-xl mx-auto">
+          Hypervision is UPES Dehradun&apos;s flagship student technical society. The largest campus movement of autonomous drones, 24-hour hackathons, and production systems.
+        </p>
+
+        {/* Hack Club-style Input / Join Box */}
+        <div className="mt-8 max-w-md mx-auto">
+          <form
+            onSubmit={handleJoin}
+            className="flex items-center bg-[#071322] border border-white/20 focus-within:border-[#1ab7f2] p-1.5 shadow-2xl transition-all"
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your.email@stu.upes.ac.in"
+              className="flex-1 bg-transparent px-3 py-2 text-sm text-white placeholder-[#597187] focus:outline-none font-mono"
+            />
+            <button
+              type="submit"
+              className="editorial-button primary !min-h-[38px] !px-5 text-xs font-bold shrink-0"
+            >
+              Join!
+            </button>
+          </form>
+          <p className="text-[11px] font-mono text-[#597187] mt-2.5">
+            For all UPES engineers &amp; developers &bull; Open to all batches
+          </p>
+        </div>
+
+        {/* Hack Club Postcard / Airmail Sticker Element */}
+        <div className="mt-10 inline-block">
+          <a
+            href="#events"
+            className="airmail-box px-5 py-3.5 inline-flex items-center gap-4 text-left group"
+          >
+            <div>
+              <span className="text-[9px] font-mono uppercase tracking-widest text-[#597187] block">
+                TO: you, a builder anywhere at UPES
+              </span>
+              <strong className="text-xs sm:text-sm font-display text-white group-hover:text-[#1ab7f2] transition-colors block">
+                Explore 2026 Flagships &amp; Sprints &rarr;
+              </strong>
             </div>
-          </div>
-
-          {/* Interactive 3D Flagship Card */}
-          <div className="lg:col-span-5">
-            {event && (
-              <TiltCard maxTilt={10} className="w-full">
-                <article className="hero-event p-6 border border-[#1ab7f2]/40 relative bg-[#081322]">
-                  <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[.14em] text-[#1ab7f2] mb-4">
-                    <span className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-[#1ab7f2] rounded-full" />
-                      Live Flagship
-                    </span>
-                    <span className="bg-[#1ab7f2]/10 border border-[#1ab7f2]/30 px-2 py-0.5 text-white">
-                      {event.month} {event.day ? `${event.day}, ` : ''}{event.year}
-                    </span>
-                  </div>
-
-                  <div className="relative aspect-[1.4] overflow-hidden bg-[#040812] border border-white/10">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover photo-mono"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#081322] via-transparent to-transparent opacity-80" />
-                    <span className="absolute bottom-3 left-3 text-[10px] font-mono uppercase tracking-widest text-[#9edcf8]">
-                      {event.category} // {event.location}
-                    </span>
-                  </div>
-
-                  <h2 className="mt-5 font-display text-2xl sm:text-3xl font-bold leading-tight text-white">
-                    {event.title}
-                  </h2>
-                  <p className="mt-2 text-sm leading-relaxed text-[#8fa2b6] line-clamp-2">
-                    {event.subtitle || event.description}
-                  </p>
-
-                  {event.link && (
-                    <a
-                      href={event.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="editorial-button primary w-full text-center mt-5 !min-h-[42px]"
-                    >
-                      Open Live Event &rarr;
-                    </a>
-                  )}
-                </article>
-              </TiltCard>
-            )}
-          </div>
+            <span className="bg-[#1ab7f2] text-[#020813] font-bold text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 shrink-0">
+              Open Track
+            </span>
+          </a>
         </div>
 
-        {/* Interactive Click-to-Redirect Stats Matrix */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/10 pt-8">
+        {/* Clean Interactive Stats Row */}
+        <div className="mt-12 pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           {stats.map((stat) => (
             <a
               key={stat.label}
               href={stat.href}
-              className="group p-5 bg-[#081322]/60 border border-white/10 hover:border-[#1ab7f2] transition-all hover:-translate-y-1 block"
+              className="group text-center transition-transform hover:-translate-y-0.5"
             >
-              <div className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight group-hover:text-[#1ab7f2] transition-colors">
+              <div className="font-display text-3xl sm:text-4xl font-bold text-white group-hover:text-[#1ab7f2] transition-colors">
                 {stat.value}
               </div>
-              <div className="mt-1 text-xs font-mono uppercase tracking-[.12em] text-[#8fa2b6]">
+              <div className="mt-1 text-xs font-mono uppercase tracking-wider text-[#788e9f] group-hover:text-white transition-colors">
                 {stat.label}
-              </div>
-              <div className="mt-3 text-[10px] font-mono uppercase tracking-wider text-[#1ab7f2] opacity-0 group-hover:opacity-100 transition-opacity">
-                {stat.hint}
               </div>
             </a>
           ))}
-        </div>
-
-        {/* Society Motto Bar */}
-        <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-[#040810] border border-white/10 p-4 text-[11px] font-mono uppercase tracking-[.14em]">
-          <div className="flex items-center gap-2 text-[#1ab7f2]">
-            <span className="font-bold text-white">MOTTO:</span>
-            <span>{HYPERVISION_INFO.motto}</span>
-          </div>
-          <div className="text-[#597187]">
-            UPES Energy Acres &bull; Bidholi, Dehradun [30.4159&deg; N, 77.9669&deg; E]
-          </div>
         </div>
       </div>
     </section>
