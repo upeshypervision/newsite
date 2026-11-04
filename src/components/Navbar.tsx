@@ -27,18 +27,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
   return (
     <header
       className={`fixed z-50 top-0 inset-x-0 transition-all duration-200 ${
-        scrolled ? 'glass-nav py-2.5' : 'bg-transparent py-4'
+        scrolled ? 'glass-nav py-2.5 shadow-lg' : 'bg-transparent py-4'
       }`}
     >
       <div className="section-wrap flex items-center justify-between gap-6">
-        {/* Hack Club-style Ribbon Flag Logo */}
-        <a href="/" className="inline-flex items-center gap-2 group no-underline shrink-0">
-          <div className="hack-flag text-xs sm:text-sm font-extrabold tracking-wider">
-            HYPERVISION
+        {/* Real Hypervision Logo + HYPERVISION text on right */}
+        <a href="/" className="inline-flex items-center gap-3 group no-underline shrink-0">
+          <HypervisionLogo size={36} />
+          <div className="flex flex-col">
+            <span className="font-display font-black text-xl tracking-tight text-white uppercase group-hover:text-[#1ab7f2] transition-colors leading-none">
+              HYPERVISION<span className="text-[#1ab7f2]">.</span>
+            </span>
+            <span className="text-[9px] font-mono uppercase tracking-[.18em] text-[#788e9f] mt-0.5 hidden sm:inline-block">
+              UPES Dehradun
+            </span>
           </div>
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#788e9f] hidden lg:inline-block ml-1">
-            UPES Dehradun
-          </span>
         </a>
 
         {/* Desktop Navigation */}
@@ -47,14 +50,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
             <a
               key={link.href}
               href={link.href}
-              className="text-xs font-mono uppercase tracking-[.14em] text-[#8fa2b6] hover:text-white transition-colors relative py-1"
+              className="text-xs font-mono uppercase tracking-[.14em] text-[#8fa2b6] hover:text-white transition-colors py-1"
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        {/* Action Buttons */}
+        {/* Curvy Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <a
             href="/admin"
@@ -64,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
           </a>
           <button
             onClick={onOpenJoin}
-            className="editorial-button primary !min-h-[38px] !px-4 text-xs font-bold"
+            className="editorial-button primary !min-h-[38px] !px-5 text-xs font-bold rounded-full"
           >
             Join the club
           </button>
@@ -73,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
         {/* Mobile menu toggle */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-xs font-mono uppercase tracking-widest text-white border border-white/20 px-3 py-1.5"
+          className="md:hidden text-xs font-mono uppercase tracking-widest text-white border border-white/20 px-3.5 py-1.5 rounded-full"
           aria-expanded={open}
         >
           {open ? 'Close' : 'Menu'}
@@ -82,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
 
       {/* Mobile Drawer */}
       {open && (
-        <nav className="md:hidden bg-[#050c16]/98 backdrop-blur-xl border-t border-white/10 px-6 py-6 flex flex-col gap-4 mt-2">
+        <nav className="md:hidden bg-[#050c16]/98 backdrop-blur-xl border-t border-white/10 px-6 py-6 flex flex-col gap-4 mt-2 rounded-b-2xl">
           {links.map((link) => (
             <a
               key={link.href}
@@ -106,7 +109,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
                 setOpen(false);
                 onOpenJoin?.();
               }}
-              className="editorial-button primary text-xs"
+              className="editorial-button primary text-xs rounded-full"
             >
               Join the club
             </button>

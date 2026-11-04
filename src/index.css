@@ -74,20 +74,20 @@
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Sharp, editorial button — NO PILL SHAPES */
+/* Curvy Hack Club-inspired buttons */
 .editorial-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
+  min-height: 42px;
   padding: 0 22px;
-  border-radius: 0 !important;
+  border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   background: transparent;
   color: #fff;
   text-decoration: none;
-  font: 600 11px var(--font-mono);
-  letter-spacing: .08em;
+  font: 600 12px var(--font-mono);
+  letter-spacing: .06em;
   text-transform: uppercase;
   transition: all .2s ease;
   cursor: pointer;
@@ -98,6 +98,7 @@
   color: #020813;
   border-color: #fff;
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
 }
 
 .editorial-button:active {
@@ -115,6 +116,7 @@
   background: #fff;
   color: #020813;
   border-color: #fff;
+  box-shadow: 0 8px 25px rgba(26, 183, 242, 0.4);
 }
 
 .site-section {

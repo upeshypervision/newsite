@@ -15,9 +15,8 @@ export const Footer: React.FC = () => {
 
   return (
     <>
-      {/* Hack Club "Ready?" Call To Action (Image 3 Inspiration) */}
+      {/* Hack Club "Ready?" Call To Action */}
       <section className="py-20 sm:py-28 bg-[#03060f] border-t border-white/10 text-white text-center relative overflow-hidden">
-        {/* Subtle grid background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1ab7f208_1px,transparent_1px),linear-gradient(to_bottom,#1ab7f208_1px,transparent_1px)] bg-[size:36px_36px] pointer-events-none" />
 
         <div className="section-wrap relative z-10 max-w-xl mx-auto px-4">
@@ -28,18 +27,18 @@ export const Footer: React.FC = () => {
           <div className="mt-6">
             <form
               onSubmit={handleSubmit}
-              className="flex items-center bg-[#071322] border border-white/20 focus-within:border-[#1ab7f2] p-1.5 shadow-2xl transition-all max-w-md mx-auto"
+              className="flex items-center bg-[#071322] border border-white/20 focus-within:border-[#1ab7f2] p-1.5 shadow-2xl transition-all max-w-md mx-auto rounded-full"
             >
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your.email@stu.upes.ac.in"
-                className="flex-1 bg-transparent px-3 py-2 text-sm text-white placeholder-[#597187] focus:outline-none font-mono"
+                className="flex-1 bg-transparent px-4 py-2 text-sm text-white placeholder-[#597187] focus:outline-none font-mono"
               />
               <button
                 type="submit"
-                className="editorial-button primary !min-h-[38px] !px-5 text-xs font-bold shrink-0"
+                className="editorial-button primary !min-h-[38px] !px-6 text-xs font-bold shrink-0 rounded-full"
               >
                 {submitted ? 'Joined!' : 'Join!'}
               </button>
@@ -53,13 +52,13 @@ export const Footer: React.FC = () => {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#events"
-              className="editorial-button primary text-xs !min-h-[40px] !px-6"
+              className="editorial-button primary text-xs !min-h-[40px] !px-6 rounded-full"
             >
               Explore current programs &rarr;
             </a>
             <a
               href="/board"
-              className="editorial-button text-xs !min-h-[40px]"
+              className="editorial-button text-xs !min-h-[40px] !px-6 rounded-full"
             >
               Meet the Board
             </a>
@@ -78,12 +77,17 @@ export const Footer: React.FC = () => {
       <footer className="bg-[#020409] pt-14 pb-10 border-t border-white/10 text-[#8fa2b6]">
         <div className="section-wrap">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 pb-12 border-b border-white/10">
-            {/* Left Brand Column with Hack Flag */}
+            {/* Left Brand Column */}
             <div className="lg:col-span-5">
-              <a href="/" className="inline-flex items-center gap-2 group no-underline mb-4">
-                <div className="hack-flag text-sm font-extrabold tracking-wider">
-                  HYPERVISION
-                </div>
+              <a href="/" className="inline-flex items-center gap-3 group no-underline mb-4">
+                <img
+                  src="/logo.png"
+                  alt="Hypervision"
+                  className="w-10 h-10 object-contain rounded-full"
+                />
+                <span className="font-display font-black text-2xl tracking-tight text-white uppercase group-hover:text-[#1ab7f2] transition-colors">
+                  HYPERVISION<span className="text-[#1ab7f2]">.</span>
+                </span>
               </a>
               <p className="text-xs sm:text-sm text-[#9ab0c4] font-medium">
                 For builders, by builders.
@@ -101,7 +105,7 @@ export const Footer: React.FC = () => {
                   href={HYPERVISION_INFO.socials.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-8 h-8 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
+                  className="w-9 h-9 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] rounded-full flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
                   title="GitHub"
                 >
                   GH
@@ -110,7 +114,7 @@ export const Footer: React.FC = () => {
                   href={HYPERVISION_INFO.socials.linkedin}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-8 h-8 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
+                  className="w-9 h-9 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] rounded-full flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
                   title="LinkedIn"
                 >
                   IN
@@ -119,14 +123,14 @@ export const Footer: React.FC = () => {
                   href={HYPERVISION_INFO.socials.instagram}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-8 h-8 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
+                  className="w-9 h-9 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] rounded-full flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
                   title="Instagram"
                 >
                   IG
                 </a>
                 <a
                   href={`mailto:${HYPERVISION_INFO.email}`}
-                  className="w-8 h-8 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
+                  className="w-9 h-9 bg-[#071322] border border-white/10 hover:border-[#1ab7f2] rounded-full flex items-center justify-center text-xs font-mono text-[#1ab7f2] hover:text-white transition-colors"
                   title="Email Contact"
                 >
                   @
@@ -238,7 +242,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Legal Liability Box */}
-          <div className="mt-8 p-4 border border-white/10 bg-[#040810] text-[#788e9f] text-[10px] leading-relaxed font-mono">
+          <div className="mt-8 p-4 border border-white/10 bg-[#040810] text-[#788e9f] text-[10px] leading-relaxed font-mono rounded-xl">
             <strong className="text-white block uppercase tracking-wider mb-1">
               LEGAL LIABILITY DISCLAIMER:
             </strong>

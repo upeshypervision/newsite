@@ -112,10 +112,10 @@ export const Gallery: React.FC = () => {
                 <TiltCard maxTilt={7} className="h-full">
                   <div
                     onClick={() => setSelectedPhoto(item)}
-                    className="group bg-[#071322] border border-white/10 hover:border-[#1ab7f2] p-3 sm:p-4 flex flex-col justify-between h-full cursor-pointer transition-all duration-300 shadow-xl hover:shadow-[0_20px_40px_rgba(26,183,242,0.15)]"
+                    className="group bg-[#071322] border border-white/10 hover:border-[#1ab7f2] p-3.5 sm:p-4 rounded-2xl flex flex-col justify-between h-full cursor-pointer transition-all duration-300 shadow-xl hover:shadow-[0_20px_40px_rgba(26,183,242,0.15)]"
                   >
                     {/* Image frame */}
-                    <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] border border-white/5">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] border border-white/5 rounded-xl">
                       <img
                         src={item.image}
                         alt={item.title}
@@ -125,12 +125,12 @@ export const Gallery: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-[#071322] via-transparent to-transparent opacity-60" />
 
                       {/* Monospace Timestamp Tag */}
-                      <div className="absolute top-2.5 left-2.5 bg-[#050c16]/90 border border-white/10 px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider text-white">
+                      <div className="absolute top-2.5 left-2.5 bg-[#050c16]/90 border border-white/10 px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider text-white">
                         {item.time}
                       </div>
 
                       {/* Tag pill */}
-                      <div className="absolute top-2.5 right-2.5 bg-[#0a1b2e]/90 border border-[#1ab7f2]/40 px-2 py-0.5 text-[9px] font-mono uppercase tracking-wider text-[#1ab7f2]">
+                      <div className="absolute top-2.5 right-2.5 bg-[#0a1b2e]/90 border border-[#1ab7f2]/40 px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider text-[#1ab7f2]">
                         {item.tag}
                       </div>
 
