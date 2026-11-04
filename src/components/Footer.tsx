@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { HYPERVISION_INFO } from '../data/hypervisionData';
+import { saveSignup } from '../data/contentStore';
 
 // 36+ real community photos for the high-density background wallpaper
 const HIGH_DENSITY_PHOTOS = [
@@ -43,13 +44,30 @@ const HIGH_DENSITY_PHOTOS = [
 
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (!email || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setErrorMsg(null);
+
+    const res = await saveSignup({
+      email,
+      source: 'footer_newsletter',
+    });
+
+    setIsSubmitting(false);
+
+    if (res.success) {
       setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 3000);
+      setEmail('');
+      setTimeout(() => setSubmitted(false), 4500);
+    } else {
+      setErrorMsg(res.error || 'Registration failed');
     }
   };
 
@@ -119,11 +137,23 @@ export const Footer: React.FC = () => {
                 />
                 <button
                   type="submit"
-                  className="editorial-button primary !min-h-[40px] !px-7 text-xs font-bold shrink-0 rounded-full cursor-pointer"
+                  disabled={isSubmitting}
+                  className="editorial-button primary !min-h-[40px] !px-7 text-xs font-bold shrink-0 rounded-full cursor-pointer disabled:opacity-50"
                 >
-                  {submitted ? 'Joined!' : 'Join!'}
+                  {isSubmitting ? 'Joining...' : submitted ? '✓ Joined!' : 'Join!'}
                 </button>
               </form>
+
+              {submitted && (
+                <p className="mt-3 text-xs font-mono text-[#10b981] animate-fade-in font-bold">
+                  ✓ You’re on the list! Welcome to UPES Hypervision.
+                </p>
+              )}
+              {errorMsg && (
+                <p className="mt-3 text-xs font-mono text-red-400">
+                  {errorMsg}
+                </p>
+              )}
             </div>
 
             {/* Navigation Action Buttons */}

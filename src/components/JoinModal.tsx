@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { saveSignup } from '../data/contentStore';
 
 interface JoinModalProps {
   isOpen: boolean;
@@ -7,9 +8,28 @@ interface JoinModalProps {
 
 export const JoinModal: React.FC<JoinModalProps> = ({ isOpen, onClose }) => {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [track, setTrack] = useState('Engineering & Distributed Systems');
+  const [notes, setNotes] = useState('');
 
   if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    await saveSignup({
+      email,
+      name,
+      track,
+      source: 'cohort_application',
+    });
+    setIsSubmitting(false);
+    setSubmitted(true);
+  };
 
   return (
     <div
@@ -57,10 +77,7 @@ export const JoinModal: React.FC<JoinModalProps> = ({ isOpen, onClose }) => {
         ) : (
           <form
             className="pt-6 space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSubmitted(true);
-            }}
+            onSubmit={handleSubmit}
           >
             <label className="block">
               <span className="admin-label">Full Legal Name</span>
@@ -78,6 +95,8 @@ export const JoinModal: React.FC<JoinModalProps> = ({ isOpen, onClose }) => {
               <input
                 required
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="username@stu.upes.ac.in"
                 className="admin-input"
               />
@@ -85,7 +104,11 @@ export const JoinModal: React.FC<JoinModalProps> = ({ isOpen, onClose }) => {
 
             <label className="block">
               <span className="admin-label">Target Technical Track</span>
-              <select className="admin-input">
+              <select
+                value={track}
+                onChange={(e) => setTrack(e.target.value)}
+                className="admin-input"
+              >
                 <option>Engineering &amp; Distributed Systems</option>
                 <option>AI / Machine Learning &amp; Computer Vision</option>
                 <option>Autonomous Drones &amp; Embedded Firmware</option>
@@ -99,14 +122,20 @@ export const JoinModal: React.FC<JoinModalProps> = ({ isOpen, onClose }) => {
               <span className="admin-label">Prior Projects or Motivation (GitHub, Portfolio, or Summary)</span>
               <textarea
                 rows={4}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
                 placeholder="Share working projects you built, technologies you explore, or what you want to achieve with Hypervision..."
                 className="admin-input resize-y"
               />
             </label>
 
             <div className="pt-2">
-              <button type="submit" className="editorial-button primary w-full text-center">
-                Submit Society Application
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="editorial-button primary w-full text-center disabled:opacity-50"
+              >
+                {isSubmitting ? 'Registering Application...' : 'Submit Society Application'}
               </button>
             </div>
           </form>

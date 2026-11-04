@@ -7,6 +7,7 @@ import { EVENTS, TEAM_MEMBERS, EventItem, TeamMember } from './hypervisionData';
  */
 const EVENTS_KEY = 'hypervision_admin_events';
 const FAMILY_KEY = 'hypervision_admin_family';
+const SIGNUPS_KEY = 'hypervision_admin_signups';
 const SESSION_KEY = 'hypervision_admin_session';
 const CONTENT_EVENT = 'hypervision:content-updated';
 
@@ -16,6 +17,15 @@ const SUPABASE_SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY as s
 
 export type ManagedEvent = EventItem & { highlights: string[] };
 export type ManagedFamilyMember = TeamMember & { quote: string };
+
+export interface ManagedSignup {
+  id: string;
+  email: string;
+  name?: string;
+  track?: string;
+  source: string;
+  created_at: string;
+}
 
 export interface AdminSession {
   accessToken: string;
@@ -40,6 +50,25 @@ const seedFamily: ManagedFamilyMember[] = TEAM_MEMBERS.map((member, index) => ({
     'Stay curious. Ship often. Keep the bar high.',
   ][index % 3],
 }));
+
+const seedSignups: ManagedSignup[] = [
+  {
+    id: 'seed-signup-1',
+    email: 'purva.sachan@stu.upes.ac.in',
+    name: 'Purva Sachan',
+    track: 'Engineering & Distributed Systems',
+    source: 'cohort_application',
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+  },
+  {
+    id: 'seed-signup-2',
+    email: 'atharv.avionics@stu.upes.ac.in',
+    name: 'Atharv Pandey',
+    track: 'Autonomous Drones & Embedded Firmware',
+    source: 'footer_newsletter',
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+  },
+];
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback;
@@ -279,9 +308,10 @@ export async function hydrateManagedContent() {
   if (!supabaseReady) return;
   try {
     const headers = supabaseHeaders();
-    const [eventsResponse, familyResponse] = await Promise.all([
+    const [eventsResponse, familyResponse, signupsResponse] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/events?select=*&order=order_index.asc`, { headers }),
       fetch(`${SUPABASE_URL}/rest/v1/family_members?select=*&order=order_index.asc`, { headers }),
+      fetch(`${SUPABASE_URL}/rest/v1/signups?select=*&order=created_at.desc`, { headers }).catch(() => null),
     ]);
 
     if (eventsResponse.ok) {
@@ -337,6 +367,13 @@ export async function hydrateManagedContent() {
         );
       }
     }
+
+    if (signupsResponse && signupsResponse.ok) {
+      const rows = await signupsResponse.json();
+      if (Array.isArray(rows) && rows.length > 0) {
+        write(SIGNUPS_KEY, rows);
+      }
+    }
   } catch (err) {
     console.warn('Supabase hydration skipped, using cached/seed content:', err);
   }
@@ -375,10 +412,94 @@ export function deleteManagedFamilyMember(name: string) {
   void deleteFromSupabase('family_members', id);
 }
 
+// -----------------------------------------------------------------------------
+// SIGNUPS & COMMUNITY REGISTRATIONS MANAGEMENT
+// -----------------------------------------------------------------------------
+export function getManagedSignups(): ManagedSignup[] {
+  return read<ManagedSignup[]>(SIGNUPS_KEY, seedSignups);
+}
+
+export async function saveSignup(signup: {
+  email: string;
+  name?: string;
+  track?: string;
+  source?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  if (!signup.email || !signup.email.includes('@')) {
+    return { success: false, error: 'Please enter a valid email address.' };
+  }
+
+  const cleanEmail = signup.email.trim().toLowerCase();
+  const newEntry: ManagedSignup = {
+    id: `signup-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    email: cleanEmail,
+    name: signup.name?.trim() || '',
+    track: signup.track?.trim() || '',
+    source: signup.source || 'footer_newsletter',
+    created_at: new Date().toISOString(),
+  };
+
+  const current = getManagedSignups();
+  const updated = [newEntry, ...current.filter((s) => s.email !== cleanEmail)];
+  write(SIGNUPS_KEY, updated);
+
+  if (supabaseReady) {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/signups`, {
+        method: 'POST',
+        headers: supabaseHeaders(),
+        body: JSON.stringify([newEntry]),
+      });
+    } catch (err) {
+      console.warn('Supabase signups sync failed, saved in local cache:', err);
+    }
+  }
+
+  return { success: true };
+}
+
+export function deleteManagedSignup(id: string) {
+  const current = getManagedSignups();
+  const updated = current.filter((s) => s.id !== id);
+  write(SIGNUPS_KEY, updated);
+  void deleteFromSupabase('signups', id);
+}
+
+export function exportSignupsToCSV() {
+  const signups = getManagedSignups();
+  if (signups.length === 0) {
+    alert('No signups recorded to export.');
+    return;
+  }
+
+  const headers = ['ID', 'Email', 'Full Name', 'Technical Track', 'Source', 'Date Submitted'];
+  const rows = signups.map((s) => [
+    `"${s.id}"`,
+    `"${s.email.replace(/"/g, '""')}"`,
+    `"${(s.name || '').replace(/"/g, '""')}"`,
+    `"${(s.track || '').replace(/"/g, '""')}"`,
+    `"${(s.source || '').replace(/"/g, '""')}"`,
+    `"${new Date(s.created_at).toLocaleString()}"`,
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  const dateStr = new Date().toISOString().split('T')[0];
+  link.setAttribute('download', `hypervision_signups_${dateStr}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export function resetManagedContent() {
   if (typeof window !== 'undefined') {
     window.localStorage.removeItem(EVENTS_KEY);
     window.localStorage.removeItem(FAMILY_KEY);
+    window.localStorage.removeItem(SIGNUPS_KEY);
     window.dispatchEvent(new CustomEvent(CONTENT_EVENT));
   }
 }

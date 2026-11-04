@@ -73,7 +73,8 @@ export const HYPERVISION_INFO = {
   socials: {
     linkedin: "https://www.linkedin.com/in/upeshypervision/",
     instagram: "https://www.instagram.com/upeshypervision/",
-    github: "https://github.com/upes-hypervision",
+    github: "https://github.com/upeshypervision/newsite",
+    repo: "https://github.com/upeshypervision/newsite",
     codeHustleLive: "https://code-hustle-11.vercel.app/"
   }
 };

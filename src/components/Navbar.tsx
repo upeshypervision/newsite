@@ -59,12 +59,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
 
         {/* Curvy Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <a
-            href="/admin"
-            className="text-[10px] font-mono uppercase tracking-[.14em] text-[#597187] hover:text-[#1ab7f2] transition-colors"
-          >
-            Admin
-          </a>
           <button
             onClick={onOpenJoin}
             className="editorial-button primary !min-h-[38px] !px-5 text-xs font-bold rounded-full"
@@ -96,20 +90,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
               {link.label}
             </a>
           ))}
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-            <a
-              href="/admin"
-              onClick={() => setOpen(false)}
-              className="text-xs font-mono uppercase tracking-widest text-[#597187]"
-            >
-              CMS Admin
-            </a>
+          <div className="pt-3 border-t border-white/10 flex items-center justify-end">
             <button
               onClick={() => {
                 setOpen(false);
                 onOpenJoin?.();
               }}
-              className="editorial-button primary text-xs rounded-full"
+              className="editorial-button primary text-xs rounded-full w-full"
             >
               Join the club
             </button>

@@ -15,7 +15,7 @@ export const Projects: React.FC = () => {
     ...PROJECTS,
   ];
 
-  // Auto-scroll loop using requestAnimationFrame
+  // Auto-scroll loop using requestAnimationFrame with sub-pixel float accumulator
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
@@ -23,22 +23,27 @@ export const Projects: React.FC = () => {
     let animId: number;
     let lastTime: number | null = null;
     const pixelsPerSecond = 34; // gentle, readable glide speed
+    let scrollPos = container.scrollLeft;
 
     const step = (now: number) => {
       if (!isPaused && container) {
         if (lastTime !== null) {
           const delta = (now - lastTime) / 1000;
-          container.scrollLeft += pixelsPerSecond * delta;
+          scrollPos += pixelsPerSecond * delta;
 
-          // Seamless loop reset when scrolling past the first set
+          // Seamless loop reset when scrolling past the first set of items
           const oneSetWidth = container.scrollWidth / 3;
-          if (container.scrollLeft >= oneSetWidth) {
-            container.scrollLeft -= oneSetWidth;
+          if (oneSetWidth > 0 && scrollPos >= oneSetWidth) {
+            scrollPos -= oneSetWidth;
           }
+          container.scrollLeft = scrollPos;
         }
         lastTime = now;
       } else {
         lastTime = null;
+        if (container) {
+          scrollPos = container.scrollLeft;
+        }
       }
       animId = requestAnimationFrame(step);
     };
@@ -117,13 +122,13 @@ export const Projects: React.FC = () => {
             if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
             pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 2000);
           }}
-          className="flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 select-none cursor-grab active:cursor-grabbing"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {displayProjects.map((project, idx) => (
             <div
               key={`${project.id}-${idx}`}
-              className="w-[290px] sm:w-[320px] shrink-0 snap-start"
+              className="w-[290px] sm:w-[320px] shrink-0"
             >
               <TiltCard maxTilt={8} className="h-full">
                 <article

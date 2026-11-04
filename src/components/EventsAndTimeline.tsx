@@ -71,22 +71,27 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
     let animId: number;
     let lastTime: number | null = null;
     const pixelsPerSecond = 32; // gentle, readable glide speed
+    let scrollPos = container.scrollLeft;
 
     const step = (now: number) => {
       if (!isPaused && container) {
         if (lastTime !== null) {
           const delta = (now - lastTime) / 1000;
-          container.scrollLeft += pixelsPerSecond * delta;
+          scrollPos += pixelsPerSecond * delta;
 
           // Seamless loop when scrolled past the first full set
           const halfWidth = container.scrollWidth / 2;
-          if (container.scrollLeft >= halfWidth) {
-            container.scrollLeft -= halfWidth;
+          if (halfWidth > 0 && scrollPos >= halfWidth) {
+            scrollPos -= halfWidth;
           }
+          container.scrollLeft = scrollPos;
         }
         lastTime = now;
       } else {
         lastTime = null;
+        if (container) {
+          scrollPos = container.scrollLeft;
+        }
       }
       animId = requestAnimationFrame(step);
     };
@@ -232,7 +237,7 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
               if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
               pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 2000);
             }}
-            className={`flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none snap-x snap-mandatory ${
+            className={`flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none select-none ${
               !shouldLoop && filteredEvents.length <= 2 ? 'sm:justify-center' : ''
             } -mx-4 px-4 sm:mx-0 sm:px-0`}
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -247,7 +252,7 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
               return (
                 <div
                   key={`${event.id}-${index}`}
-                  className={`${cardWidthClass} shrink-0 snap-start`}
+                  className={`${cardWidthClass} shrink-0`}
                 >
                   <TiltCard maxTilt={8} className="h-full">
                     <article

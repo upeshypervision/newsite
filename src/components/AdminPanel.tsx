@@ -3,14 +3,18 @@ import { EventItem } from '../data/hypervisionData';
 import {
   deleteManagedEvent,
   deleteManagedFamilyMember,
+  deleteManagedSignup,
+  exportSignupsToCSV,
   getAdminSession,
   getManagedEvents,
   getManagedFamily,
+  getManagedSignups,
   hydrateManagedContent,
   loginWithSupabase,
   logoutAdmin,
   ManagedEvent,
   ManagedFamilyMember,
+  ManagedSignup,
   resetManagedContent,
   saveManagedEvents,
   saveManagedFamily,
@@ -122,9 +126,11 @@ export const AdminPanel: React.FC = () => {
   const [authError, setAuthError] = useState<string | null>(null);
 
   // Content state
-  const [tab, setTab] = useState<'events' | 'family'>('events');
+  const [tab, setTab] = useState<'events' | 'family' | 'signups'>('events');
   const [events, setEvents] = useState<ManagedEvent[]>(getManagedEvents);
   const [family, setFamily] = useState<ManagedFamilyMember[]>(getManagedFamily);
+  const [signups, setSignups] = useState<ManagedSignup[]>(getManagedSignups);
+  const [signupSearch, setSignupSearch] = useState('');
   const [editingEvent, setEditingEvent] = useState<ReturnType<typeof eventToForm> | null>(null);
   const [editingMember, setEditingMember] = useState<ManagedFamilyMember | null>(null);
 
@@ -138,6 +144,7 @@ export const AdminPanel: React.FC = () => {
     void hydrateManagedContent().then(() => {
       setEvents(getManagedEvents());
       setFamily(getManagedFamily());
+      setSignups(getManagedSignups());
     });
   }, []);
 
@@ -156,6 +163,7 @@ export const AdminPanel: React.FC = () => {
       void hydrateManagedContent().then(() => {
         setEvents(getManagedEvents());
         setFamily(getManagedFamily());
+        setSignups(getManagedSignups());
       });
     } else {
       setAuthError(result.error || 'Authentication failed. Please verify credentials.');
@@ -227,6 +235,17 @@ export const AdminPanel: React.FC = () => {
     setEditingEvent(null);
     setUploadStatus(null);
   };
+
+  const filteredSignups = signups.filter((s) => {
+    if (!signupSearch.trim()) return true;
+    const q = signupSearch.toLowerCase();
+    return (
+      s.email.toLowerCase().includes(q) ||
+      (s.name && s.name.toLowerCase().includes(q)) ||
+      (s.track && s.track.toLowerCase().includes(q)) ||
+      s.source.toLowerCase().includes(q)
+    );
+  });
 
   const saveMember = () => {
     if (!editingMember?.name.trim()) return;
@@ -418,6 +437,12 @@ export const AdminPanel: React.FC = () => {
           >
             Hypervision Family &amp; Board ({family.length})
           </button>
+          <button
+            className={`admin-button text-sm !px-5 ${tab === 'signups' ? 'active' : ''}`}
+            onClick={() => setTab('signups')}
+          >
+            Signups &amp; Leads ({signups.length})
+          </button>
 
           <button
             className="admin-button ml-auto border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs"
@@ -426,6 +451,7 @@ export const AdminPanel: React.FC = () => {
                 resetManagedContent();
                 setEvents(getManagedEvents());
                 setFamily(getManagedFamily());
+                setSignups(getManagedSignups());
               }
             }}
           >
@@ -434,7 +460,7 @@ export const AdminPanel: React.FC = () => {
         </div>
 
         {/* TAB 1: EVENTS MANAGEMENT */}
-        {tab === 'events' ? (
+        {tab === 'events' && (
           <section className="mt-8">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
               <div>
@@ -547,8 +573,120 @@ export const AdminPanel: React.FC = () => {
               ))}
             </div>
           </section>
-        ) : (
-          /* TAB 2: FAMILY / BOARD MANAGEMENT */
+        )}
+
+        {/* TAB 3: SIGNUPS & LEADS MANAGEMENT */}
+        {tab === 'signups' && (
+          <section className="mt-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[.15em] text-[#1ab7f2]">
+                  03 // Community &amp; Applicant Database
+                </p>
+                <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
+                  Newsletter Signups &amp; Recruitment Leads
+                </h2>
+                <p className="text-xs text-[#8fa2b6] mt-1 font-mono">
+                  Recorded from visitor join forms and student applications in <code className="text-[#1ab7f2]">public.signups</code>.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <input
+                  type="text"
+                  placeholder="Filter by email or name..."
+                  value={signupSearch}
+                  onChange={(e) => setSignupSearch(e.target.value)}
+                  className="admin-input !py-2 text-xs !w-56"
+                />
+                <button
+                  type="button"
+                  onClick={exportSignupsToCSV}
+                  className="editorial-button primary text-xs !min-h-[40px] !px-5 cursor-pointer flex items-center gap-2"
+                >
+                  <span>📥 Download CSV Export</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Table of signups */}
+            <div className="bg-[#081322] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/10 bg-[#060e18] text-[10px] font-mono uppercase tracking-wider text-[#788e9f]">
+                      <th className="py-3 px-4">Email Address</th>
+                      <th className="py-3 px-4">Applicant Name</th>
+                      <th className="py-3 px-4">Target Track</th>
+                      <th className="py-3 px-4">Origin Channel</th>
+                      <th className="py-3 px-4">Submission Date</th>
+                      <th className="py-3 px-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-xs font-mono">
+                    {filteredSignups.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-[#597187]">
+                          No signups or applications matched your query.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredSignups.map((s) => (
+                        <tr key={s.id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="py-3.5 px-4 font-bold text-white">
+                            {s.email}
+                          </td>
+                          <td className="py-3.5 px-4 text-[#c0d4e6]">
+                            {s.name || '—'}
+                          </td>
+                          <td className="py-3.5 px-4 text-[#8fa2b6]">
+                            {s.track || 'General Interest'}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`text-[9px] uppercase px-2.5 py-0.5 rounded-full border ${
+                                s.source === 'cohort_application'
+                                  ? 'border-[#1ab7f2] text-[#1ab7f2] bg-[#1ab7f2]/10'
+                                  : 'border-white/10 text-[#8fa2b6] bg-[#040812]'
+                              }`}
+                            >
+                              {s.source === 'cohort_application' ? 'Cohort Applicant' : 'Footer Newsletter'}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-[#597187]">
+                            {new Date(s.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Delete signup record for "${s.email}"?`)) {
+                                  deleteManagedSignup(s.id);
+                                  setSignups(getManagedSignups());
+                                }
+                              }}
+                              className="text-red-400 hover:text-red-300 hover:underline text-[11px] cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* TAB 2: FAMILY / BOARD MANAGEMENT */}
+        {tab === 'family' && (
           <section className="mt-8">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
               <div>
@@ -631,6 +769,116 @@ export const AdminPanel: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* TAB 3: SIGNUPS & LEADS MANAGEMENT */}
+        {tab === 'signups' && (
+          <section className="mt-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[.15em] text-[#1ab7f2]">
+                  03 // Community &amp; Applicant Database
+                </p>
+                <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
+                  Newsletter Signups &amp; Recruitment Leads
+                </h2>
+                <p className="text-xs text-[#8fa2b6] mt-1 font-mono">
+                  Recorded from visitor join forms and student applications in <code className="text-[#1ab7f2]">public.signups</code>.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <input
+                  type="text"
+                  placeholder="Filter by email or name..."
+                  value={signupSearch}
+                  onChange={(e) => setSignupSearch(e.target.value)}
+                  className="admin-input !py-2 text-xs !w-56"
+                />
+                <button
+                  type="button"
+                  onClick={exportSignupsToCSV}
+                  className="editorial-button primary text-xs !min-h-[40px] !px-5 cursor-pointer flex items-center gap-2"
+                >
+                  <span>📥 Download CSV Export</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Table of signups */}
+            <div className="bg-[#081322] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/10 bg-[#060e18] text-[10px] font-mono uppercase tracking-wider text-[#788e9f]">
+                      <th className="py-3 px-4">Email Address</th>
+                      <th className="py-3 px-4">Applicant Name</th>
+                      <th className="py-3 px-4">Target Track</th>
+                      <th className="py-3 px-4">Origin Channel</th>
+                      <th className="py-3 px-4">Submission Date</th>
+                      <th className="py-3 px-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-xs font-mono">
+                    {filteredSignups.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-12 text-center text-[#597187]">
+                          No signups or applications matched your query.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredSignups.map((s) => (
+                        <tr key={s.id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="py-3.5 px-4 font-bold text-white">
+                            {s.email}
+                          </td>
+                          <td className="py-3.5 px-4 text-[#c0d4e6]">
+                            {s.name || '—'}
+                          </td>
+                          <td className="py-3.5 px-4 text-[#8fa2b6]">
+                            {s.track || 'General Interest'}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`text-[9px] uppercase px-2.5 py-0.5 rounded-full border ${
+                                s.source === 'cohort_application'
+                                  ? 'border-[#1ab7f2] text-[#1ab7f2] bg-[#1ab7f2]/10'
+                                  : 'border-white/10 text-[#8fa2b6] bg-[#040812]'
+                              }`}
+                            >
+                              {s.source === 'cohort_application' ? 'Cohort Applicant' : 'Footer Newsletter'}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-[#597187]">
+                            {new Date(s.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Delete signup record for "${s.email}"?`)) {
+                                  deleteManagedSignup(s.id);
+                                  setSignups(getManagedSignups());
+                                }
+                              }}
+                              className="text-red-400 hover:text-red-300 hover:underline text-[11px] cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </section>
         )}

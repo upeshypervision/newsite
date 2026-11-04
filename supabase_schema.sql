@@ -293,3 +293,31 @@ on conflict (id) do update set
   github = excluded.github,
   quote = excluded.quote,
   order_index = excluded.order_index;
+
+
+-- ==============================================================================
+-- 8. SIGNUPS & RECRUITMENT LEADS TABLE (`signups`)
+-- ==============================================================================
+create table if not exists public.signups (
+  id text primary key,
+  email text not null,
+  name text default '',
+  track text default '',
+  source text default 'footer_newsletter',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.signups enable row level security;
+
+drop policy if exists "Allow insert for all on signups" on public.signups;
+drop policy if exists "Allow select for all on signups" on public.signups;
+drop policy if exists "Allow delete for all on signups" on public.signups;
+
+create policy "Allow insert for all on signups"
+  on public.signups for insert with check (true);
+
+create policy "Allow select for all on signups"
+  on public.signups for select using (true);
+
+create policy "Allow delete for all on signups"
+  on public.signups for delete using (true);
