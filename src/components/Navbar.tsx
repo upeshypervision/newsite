@@ -59,12 +59,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
 
         {/* Curvy Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={onOpenJoin}
-            className="editorial-button primary !min-h-[38px] !px-5 text-xs font-bold rounded-full"
+          <a
+            href="/#join"
+            onClick={(e) => {
+              if (window.location.pathname === '/') {
+                e.preventDefault();
+                document.getElementById('join')?.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="editorial-button primary !min-h-[38px] !px-5 text-xs font-bold rounded-full no-underline cursor-pointer"
           >
             Join the club
-          </button>
+          </a>
         </div>
 
         {/* Mobile menu toggle */}
@@ -91,15 +97,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenJoin }) => {
             </a>
           ))}
           <div className="pt-3 border-t border-white/10 flex items-center justify-end">
-            <button
-              onClick={() => {
+            <a
+              href="/#join"
+              onClick={(e) => {
                 setOpen(false);
-                onOpenJoin?.();
+                if (window.location.pathname === '/') {
+                  e.preventDefault();
+                  document.getElementById('join')?.scrollIntoView({ behavior: 'smooth' });
+                }
               }}
-              className="editorial-button primary text-xs rounded-full w-full"
+              className="editorial-button primary text-xs rounded-full w-full text-center no-underline cursor-pointer"
             >
               Join the club
-            </button>
+            </a>
           </div>
         </nav>
       )}

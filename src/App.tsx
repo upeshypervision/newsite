@@ -26,7 +26,16 @@ export default function App() {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
 
   const handleOpenJoin = () => {
-    setIsJoinModalOpen(true);
+    if (window.location.pathname !== '/') {
+      window.location.href = '/#join';
+      return;
+    }
+    const el = document.getElementById('join');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.hash = 'join';
+    }
   };
 
   const handleCloseJoin = () => {

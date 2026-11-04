@@ -74,7 +74,10 @@ export const Footer: React.FC = () => {
   return (
     <>
       {/* HIGH DENSITY PHOTO WALL & "IMAGINE A WORLD WHERE YOU JOINED" SECTION */}
-      <section className="relative bg-[#02050c] text-white overflow-hidden py-24 sm:py-36 border-t border-white/10">
+      <section
+        id="join"
+        className="relative bg-[#02050c] text-white overflow-hidden py-24 sm:py-36 border-t border-white/10 scroll-mt-12"
+      >
         {/* VERY HIGH DENSITY BACKGROUND PHOTO MOSAIC (Full-bleed edge-to-edge) */}
         <div className="absolute inset-0 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 opacity-30 pointer-events-none select-none overflow-hidden scale-105">
           {HIGH_DENSITY_PHOTOS.map((src, idx) => (

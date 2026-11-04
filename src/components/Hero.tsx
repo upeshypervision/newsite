@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HYPERVISION_INFO } from '../data/hypervisionData';
 import { TiltCard } from './TiltCard';
+import { saveSignup } from '../data/contentStore';
 
 interface HeroProps {
   onOpenJoin: () => void;
@@ -9,8 +10,12 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
   const [email, setEmail] = useState('');
 
-  const handleJoin = (e: React.FormEvent) => {
+  const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (email) {
+      await saveSignup({ email, source: 'hero_newsletter' });
+      setEmail('');
+    }
     onOpenJoin();
   };
 
