@@ -51,11 +51,11 @@ export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
         aria-hidden="true"
       />
 
-      {/* LEFT SCATTER PHOTOS (Hack Club Style Frame with 3D Tilt Effect) */}
+      {/* LEFT SCATTER PHOTOS (Folder Document Pull-Out Spring Animation) */}
       <div className="hidden lg:block absolute left-3 xl:left-8 top-32 w-64 pointer-events-auto space-y-6 select-none z-10">
         {/* Top Left: Lab Coding */}
-        <TiltCard maxTilt={12}>
-          <div className="scatter-card p-2 transform -rotate-6 w-56 rounded-xl">
+        <TiltCard maxTilt={10}>
+          <div className="folder-card-left p-2 transform -rotate-6 w-56 rounded-xl">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] rounded-lg">
               <img
                 src="/gallery/gallery_3.webp"
@@ -70,8 +70,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
         </TiltCard>
 
         {/* Mid Left: Code Hustle */}
-        <TiltCard maxTilt={12}>
-          <div className="scatter-card p-2 transform rotate-3 w-60 ml-4 rounded-xl">
+        <TiltCard maxTilt={10}>
+          <div className="folder-card-left p-2 transform rotate-3 w-60 ml-4 rounded-xl">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] rounded-lg">
               <img
                 src="/events/code_hustle_1.webp"
@@ -86,8 +86,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
         </TiltCard>
 
         {/* Bottom Left: Drone Tech */}
-        <TiltCard maxTilt={12}>
-          <div className="scatter-card p-2 transform -rotate-3 w-52 rounded-xl">
+        <TiltCard maxTilt={10}>
+          <div className="folder-card-left p-2 transform -rotate-3 w-52 rounded-xl">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] rounded-lg">
               <img
                 src="/events/drone_tech.webp"
@@ -102,11 +102,11 @@ export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
         </TiltCard>
       </div>
 
-      {/* RIGHT SCATTER PHOTOS (Hack Club Style Frame with 3D Tilt Effect) */}
+      {/* RIGHT SCATTER PHOTOS (Folder Document Pull-Out Bouncy Animation) */}
       <div className="hidden lg:block absolute right-3 xl:right-8 top-32 w-64 pointer-events-auto space-y-6 select-none z-10">
         {/* Top Right: Winner Podium */}
-        <TiltCard maxTilt={12}>
-          <div className="scatter-card p-2 transform rotate-6 w-56 ml-auto rounded-xl">
+        <TiltCard maxTilt={10}>
+          <div className="folder-card-right p-2 transform rotate-6 w-56 ml-auto rounded-xl">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] rounded-lg">
               <img
                 src="/gallery/gallery_1.webp"
@@ -121,8 +121,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
         </TiltCard>
 
         {/* Mid Right: SIH 330 Teams */}
-        <TiltCard maxTilt={12}>
-          <div className="scatter-card p-2 transform -rotate-4 w-60 mr-4 rounded-xl">
+        <TiltCard maxTilt={10}>
+          <div className="folder-card-right p-2 transform -rotate-4 w-60 mr-4 rounded-xl">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] rounded-lg">
               <img
                 src="/events/sih_1.webp"
@@ -137,8 +137,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenJoin }) => {
         </TiltCard>
 
         {/* Bottom Right: Keynote Hall */}
-        <TiltCard maxTilt={12}>
-          <div className="scatter-card p-2 transform rotate-3 w-52 ml-auto rounded-xl">
+        <TiltCard maxTilt={10}>
+          <div className="folder-card-right p-2 transform rotate-3 w-52 ml-auto rounded-xl">
             <div className="relative aspect-[4/3] overflow-hidden bg-[#02050a] rounded-lg">
               <img
                 src="/gallery/gallery_4.webp"
