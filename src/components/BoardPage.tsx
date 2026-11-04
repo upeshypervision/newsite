@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { JoinModal } from './JoinModal';
-import { TEAM_MEMBERS, TeamMember } from '../data/hypervisionData';
+import { TeamMember } from '../data/hypervisionData';
+import {
+  CONTENT_EVENT,
+  getManagedFamily,
+  hydrateManagedContent,
+  ManagedFamilyMember,
+} from '../data/contentStore';
 import { TiltCard } from './TiltCard';
 
 interface BoardPageProps {
   onOpenJoin?: () => void;
 }
 
-const LeaderCard = ({ member }: { member: TeamMember }) => (
+const LeaderCard = ({ member }: { member: ManagedFamilyMember | TeamMember }) => (
   <TiltCard maxTilt={6} className="h-full">
     <div className="bg-[#081322] border border-white/10 p-5 sm:p-6 rounded-2xl group hover:border-[#1ab7f2] transition-all h-full flex flex-col justify-between shadow-lg hover:shadow-[0_15px_35px_rgba(26,183,242,0.15)]">
       <div>
@@ -74,19 +80,27 @@ const LeaderCard = ({ member }: { member: TeamMember }) => (
 );
 
 export const BoardPage: React.FC<BoardPageProps> = ({ onOpenJoin }) => {
+  const [members, setMembers] = useState<ManagedFamilyMember[]>(getManagedFamily);
   const [joinOpen, setJoinOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('all');
+
+  useEffect(() => {
+    const update = () => setMembers(getManagedFamily());
+    void hydrateManagedContent();
+    window.addEventListener(CONTENT_EVENT, update);
+    return () => window.removeEventListener(CONTENT_EVENT, update);
+  }, []);
 
   const openJoin = () => {
     setJoinOpen(true);
     onOpenJoin?.();
   };
 
-  const faculty = TEAM_MEMBERS.filter((m) => m.category === 'faculty');
-  const executive = TEAM_MEMBERS.filter((m) => m.category === 'executive');
-  const technical = TEAM_MEMBERS.filter((m) => m.category === 'technical');
-  const design = TEAM_MEMBERS.filter((m) => m.category === 'design');
-  const operations = TEAM_MEMBERS.filter((m) => m.category === 'operations' || m.category === 'outreach');
+  const faculty = members.filter((m) => m.category === 'faculty');
+  const executive = members.filter((m) => m.category === 'executive');
+  const technical = members.filter((m) => m.category === 'technical');
+  const design = members.filter((m) => m.category === 'design');
+  const operations = members.filter((m) => m.category === 'operations' || m.category === 'outreach');
 
   const sections = [
     { key: 'faculty', label: '01 // Faculty', title: 'Faculty Leadership & Advisory', desc: 'Mentorship from School of Computer Science (SoCS), UPES Dehradun.', list: faculty },

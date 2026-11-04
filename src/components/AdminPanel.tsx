@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { EventItem } from '../data/hypervisionData';
 import {
+  deleteManagedEvent,
+  deleteManagedFamilyMember,
   getManagedEvents,
   getManagedFamily,
   hydrateManagedContent,
@@ -274,9 +276,11 @@ export const AdminPanel: React.FC = () => {
                     <button
                       className="admin-button border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white"
                       onClick={() => {
-                        const updated = events.filter((item) => item.id !== event.id);
-                        setEvents(updated);
-                        saveManagedEvents(updated);
+                        if (window.confirm(`Delete "${event.title}"?`)) {
+                          const updated = events.filter((item) => item.id !== event.id);
+                          setEvents(updated);
+                          deleteManagedEvent(event.id);
+                        }
                       }}
                     >
                       Delete
@@ -344,9 +348,11 @@ export const AdminPanel: React.FC = () => {
                     <button
                       className="admin-button border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white"
                       onClick={() => {
-                        const updated = family.filter((item) => item.name !== member.name);
-                        setFamily(updated);
-                        saveManagedFamily(updated);
+                        if (window.confirm(`Delete "${member.name}"?`)) {
+                          const updated = family.filter((item) => item.name !== member.name);
+                          setFamily(updated);
+                          deleteManagedFamilyMember(member.name);
+                        }
                       }}
                     >
                       Delete
