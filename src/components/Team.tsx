@@ -183,41 +183,41 @@ export const Team: React.FC = () => {
                   exit={{ scale: 0.95, y: 10 }}
                   transition={{ duration: 0.22, ease: 'easeOut' }}
                   onClick={(e) => e.stopPropagation()}
-                  className="max-w-4xl w-full bg-[#071322] border border-[#1ab7f2]/50 rounded-3xl p-6 sm:p-8 shadow-[0_25px_80px_rgba(0,0,0,0.95)] relative overflow-hidden my-auto"
+                  className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-[#071322] border border-[#1ab7f2]/50 rounded-3xl p-5 sm:p-8 shadow-[0_25px_80px_rgba(0,0,0,0.95)] relative my-auto scrollbar-thin"
                 >
                   {/* Atmospheric cyan flare in card corner */}
                   <div className="absolute -top-16 -right-16 w-56 h-56 bg-[#1ab7f2]/15 blur-3xl pointer-events-none rounded-full" />
 
                   {/* Top Bar: Badges + Prev/Next Navigation + Close Button */}
-                  <div className="flex items-center justify-between pb-4 border-b border-white/10 gap-3">
+                  <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-white/10 gap-2 sm:gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="bg-[#1ab7f2]/10 border border-[#1ab7f2]/40 text-[#1ab7f2] text-[10px] font-mono uppercase tracking-widest px-3 py-0.5 rounded-full font-semibold">
-                        {hovered.category} // Active Builder
+                      <span className="bg-[#1ab7f2]/10 border border-[#1ab7f2]/40 text-[#1ab7f2] text-[9px] sm:text-[10px] font-mono uppercase tracking-widest px-2.5 sm:px-3 py-0.5 rounded-full font-semibold">
+                        {hovered.category} // Core
                       </span>
-                      <span className="text-[#597187] text-[10px] font-mono uppercase tracking-wider hidden sm:inline-block">
+                      <span className="text-[#597187] text-[10px] font-mono uppercase tracking-wider hidden md:inline-block">
                         UPES School of Computer Science
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       {/* Prev / Next controls */}
                       <button
                         onClick={handlePrev}
-                        className="text-xs font-mono px-2.5 py-1 border border-white/10 hover:border-[#1ab7f2] rounded-full text-[#8fa2b6] hover:text-white transition-colors"
+                        className="text-[11px] sm:text-xs font-mono px-2 sm:px-2.5 py-1 border border-white/10 hover:border-[#1ab7f2] rounded-full text-[#8fa2b6] hover:text-white transition-colors"
                         title="Previous Builder"
                       >
                         &larr; Prev
                       </button>
                       <button
                         onClick={handleNext}
-                        className="text-xs font-mono px-2.5 py-1 border border-white/10 hover:border-[#1ab7f2] rounded-full text-[#8fa2b6] hover:text-white transition-colors"
+                        className="text-[11px] sm:text-xs font-mono px-2 sm:px-2.5 py-1 border border-white/10 hover:border-[#1ab7f2] rounded-full text-[#8fa2b6] hover:text-white transition-colors"
                         title="Next Builder"
                       >
                         Next &rarr;
                       </button>
                       <button
                         onClick={() => setHovered(null)}
-                        className="text-xs font-mono px-3 py-1 bg-[#050c18] border border-white/20 hover:border-white text-[#788e9f] hover:text-white rounded-full transition-colors ml-1"
+                        className="text-[11px] sm:text-xs font-mono px-2.5 sm:px-3 py-1 bg-[#050c18] border border-white/20 hover:border-white text-[#788e9f] hover:text-white rounded-full transition-colors ml-1"
                       >
                         [Close &times;]
                       </button>
@@ -225,9 +225,9 @@ export const Team: React.FC = () => {
                   </div>
 
                   {/* Main Grid: Big Photo on left, Rich Content on right */}
-                  <div className="mt-6 flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8">
+                  <div className="mt-5 sm:mt-6 flex flex-col md:flex-row items-center md:items-start gap-5 sm:gap-8">
                     {/* BIG HIGH-RES PHOTO */}
-                    <div className="w-48 h-56 sm:w-64 sm:h-72 shrink-0 overflow-hidden bg-[#02050a] border border-[#1ab7f2]/40 rounded-2xl shadow-xl relative">
+                    <div className="w-36 h-44 sm:w-64 sm:h-72 shrink-0 overflow-hidden bg-[#02050a] border border-[#1ab7f2]/40 rounded-2xl shadow-xl relative">
                       {hovered.image ? (
                         <img
                           src={hovered.image}
@@ -235,12 +235,12 @@ export const Team: React.FC = () => {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center font-display text-7xl font-bold text-[#1ab7f2]">
+                        <div className="w-full h-full flex items-center justify-center font-display text-5xl sm:text-7xl font-bold text-[#1ab7f2]">
                           {hovered.initials}
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#071322] via-transparent to-transparent opacity-60" />
-                      <span className="absolute bottom-2.5 left-2.5 bg-[#050c16]/90 text-[9px] font-mono uppercase tracking-widest text-[#1ab7f2] px-2.5 py-0.5 rounded-full border border-white/10">
+                      <span className="absolute bottom-2 left-2 bg-[#050c16]/90 text-[8px] sm:text-[9px] font-mono uppercase tracking-widest text-[#1ab7f2] px-2 py-0.5 rounded-full border border-white/10 truncate max-w-[90%]">
                         {hovered.department || 'Hypervision Society'}
                       </span>
                     </div>
