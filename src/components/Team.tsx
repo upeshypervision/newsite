@@ -76,7 +76,7 @@ export const Team: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b rule">
           <div>
-            <p className="section-kicker">04 // The Roster</p>
+            <p className="section-kicker">03 // The Roster</p>
             <h2 className="section-title">
               The Hypervision<br />
               <span className="text-[#1ab7f2]">family.</span>

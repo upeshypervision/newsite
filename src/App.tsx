@@ -57,10 +57,6 @@ export default function App() {
           </LazyReveal>
 
           <LazyReveal>
-            <Projects />
-          </LazyReveal>
-
-          <LazyReveal>
             <EventsAndTimeline onOpenJoin={handleOpenJoin} />
           </LazyReveal>
 
@@ -70,6 +66,10 @@ export default function App() {
 
           <LazyReveal>
             <Gallery />
+          </LazyReveal>
+
+          <LazyReveal>
+            <Projects />
           </LazyReveal>
         </Suspense>
       </main>

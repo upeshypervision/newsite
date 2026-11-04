@@ -77,7 +77,7 @@ export const Gallery: React.FC = () => {
       <div className="section-wrap">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b rule">
           <div>
-            <p className="section-kicker">05 // Visual Field Archive</p>
+            <p className="section-kicker">04 // Visual Field Archive</p>
             <h2 className="section-title">
               In the<br />
               <span className="text-[#1ab7f2]">arena.</span>

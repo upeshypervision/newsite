@@ -1,6 +1,46 @@
 import React, { useState } from 'react';
 import { HYPERVISION_INFO } from '../data/hypervisionData';
 
+// 36+ real community photos for the high-density background wallpaper
+const HIGH_DENSITY_PHOTOS = [
+  '/gallery/gallery_4.webp',
+  '/events/code_hustle_1.webp',
+  '/gallery/gallery_1.webp',
+  '/events/sih_1.webp',
+  '/gallery/gallery_3.webp',
+  '/events/drone_tech.webp',
+  '/events/code_hustle_2.webp',
+  '/gallery/gallery_2.webp',
+  '/events/sih_2.webp',
+  '/events/code_connect_1.webp',
+  '/events/avritti_1.webp',
+  '/events/avritti_2.webp',
+  '/events/pehchaan_2.webp',
+  '/events/sih_poster.webp',
+  '/events/code_hustle.webp',
+  '/events/pehchaan.webp',
+  '/team/purva.webp',
+  '/team/divyanshu_gaur.webp',
+  '/team/om_agarwal.webp',
+  '/team/atharv_pandey.webp',
+  '/team/yash_gupta.webp',
+  '/team/akshat_agarwal.webp',
+  '/team/praanjal_jain.webp',
+  '/team/priyal_sharma.webp',
+  '/team/manasvi_soni.webp',
+  '/team/misha.webp',
+  '/team/abhay_sachan.webp',
+  '/team/preksha.webp',
+  '/team/pranav_r_nair.webp',
+  '/team/namami_pandey.webp',
+  '/team/harsh_kamboj.webp',
+  '/team/manan_arora.webp',
+  '/gallery/gallery_4.webp',
+  '/events/code_hustle_1.webp',
+  '/gallery/gallery_1.webp',
+  '/events/sih_1.webp',
+];
+
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -15,280 +55,117 @@ export const Footer: React.FC = () => {
 
   return (
     <>
-      {/* COMMUNITY PHOTO COLLAGE & "IMAGINE A WORLD WHERE YOU JOINED" SECTION */}
-      <section className="relative bg-[#02050c] text-white overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-24 border-t border-white/10">
-        {/* Subtle grid pattern background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1ab7f208_1px,transparent_1px),linear-gradient(to_bottom,#1ab7f208_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
-
-        <div className="max-w-[1400px] mx-auto px-3 sm:px-6 relative z-10">
-          {/* TOP PHOTO ROW: Full-bleed panoramic student moments */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-3">
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
+      {/* HIGH DENSITY PHOTO WALL & "IMAGINE A WORLD WHERE YOU JOINED" SECTION */}
+      <section className="relative bg-[#02050c] text-white overflow-hidden py-24 sm:py-36 border-t border-white/10">
+        {/* VERY HIGH DENSITY BACKGROUND PHOTO MOSAIC (Full-bleed edge-to-edge) */}
+        <div className="absolute inset-0 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 opacity-30 pointer-events-none select-none overflow-hidden scale-105">
+          {HIGH_DENSITY_PHOTOS.map((src, idx) => (
+            <div
+              key={idx}
+              className="aspect-[4/3] rounded-md overflow-hidden bg-[#071322] border border-white/5"
+            >
               <img
-                src="/gallery/gallery_4.webp"
-                alt="MAC Auditorium symposium crowd"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                src={src}
+                alt=""
+                className="w-full h-full object-cover grayscale-[25%] contrast-110"
                 loading="lazy"
               />
             </div>
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-              <img
-                src="/events/sih_1.webp"
-                alt="Smart India Hackathon 330 teams arbitration"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg hidden sm:block">
-              <img
-                src="/events/pehchaan_2.webp"
-                alt="Annual tech and career festival crowd"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg hidden sm:block">
-              <img
-                src="/events/avritti_2.webp"
-                alt="Alumni connect networking hall"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-          </div>
+          ))}
+        </div>
 
-          {/* MAIN 3-COLUMN MOSAIC: Left Photos | Center Floating Card | Right Photos */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
-            {/* LEFT PHOTO COLUMN (3 cols) */}
-            <div className="hidden lg:grid grid-cols-2 gap-3 lg:col-span-3">
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/gallery/gallery_1.webp"
-                  alt="Hackathon winner celebration on stage"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
+        {/* Gradient vignette overlays for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#020409] via-[#02050c]/80 to-[#020409] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(4,8,18,0.7)_0%,rgba(2,5,12,0.94)_100%)] pointer-events-none" />
+
+        {/* Subtle Tech Line Art Accents (Lightweight circuit & crosshair motifs) */}
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_right,#1ab7f208_1px,transparent_1px),linear-gradient(to_bottom,#1ab7f208_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none"
+          aria-hidden="true"
+        />
+        <div className="absolute top-10 left-12 text-[#1ab7f2]/20 font-mono text-xs select-none pointer-events-none hidden md:block">
+          + 24H_CLOCK // 03:42:18
+        </div>
+        <div className="absolute bottom-12 right-12 text-[#1ab7f2]/20 font-mono text-xs select-none pointer-events-none hidden md:block">
+          SYS_TELEM // 2.4GHz_LINK_OK +
+        </div>
+
+        {/* CENTER FLOATING CARD (CLEAN: NO EMBEDDED PHOTO) */}
+        <div className="section-wrap relative z-10 max-w-2xl mx-auto px-4 text-center">
+          <div className="bg-[#071322]/95 backdrop-blur-2xl border-2 border-white/15 hover:border-[#1ab7f2]/50 rounded-3xl p-8 sm:p-12 shadow-[0_25px_60px_rgba(0,0,0,0.85)] transition-all">
+            {/* Main Heading */}
+            <h2 className="font-display font-black text-3xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
+              Imagine a world where you<br />
+              <span className="text-[#1ab7f2]">joined Hypervision:</span>
+            </h2>
+
+            <p className="mt-4 text-base sm:text-lg text-[#9ab0c4] max-w-md mx-auto">
+              Get started with building something real.
+            </p>
+
+            {/* Email Join Form */}
+            <div className="mt-8 max-w-md mx-auto">
+              <form
+                onSubmit={handleSubmit}
+                className="flex items-center bg-[#040812] border border-white/20 focus-within:border-[#1ab7f2] p-1.5 shadow-2xl transition-all rounded-full"
+              >
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your.email@stu.upes.ac.in"
+                  className="flex-1 bg-transparent px-4 py-2.5 text-xs sm:text-sm text-white placeholder-[#597187] focus:outline-none font-mono"
+                  required
                 />
-              </div>
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/gallery/gallery_3.webp"
-                  alt="03:42 AM late night lab coding"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/events/drone_tech.webp"
-                  alt="Autonomous drone avionics payload"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/events/avritti_1.webp"
-                  alt="Alumni technical mentorship session"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
+                <button
+                  type="submit"
+                  className="editorial-button primary !min-h-[40px] !px-7 text-xs font-bold shrink-0 rounded-full cursor-pointer"
+                >
+                  {submitted ? 'Joined!' : 'Join!'}
+                </button>
+              </form>
             </div>
 
-            {/* CENTER FLOATING CARD (6 cols) */}
-            <div className="lg:col-span-6 w-full">
-              <div className="bg-[#071322]/95 backdrop-blur-2xl border-2 border-white/15 hover:border-[#1ab7f2]/60 rounded-3xl p-6 sm:p-9 text-center shadow-[0_25px_60px_rgba(0,0,0,0.85)] relative transition-all duration-300">
-                {/* Heading */}
-                <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white leading-[1.05]">
-                  Imagine a world where you<br />
-                  <span className="text-[#1ab7f2]">joined Hypervision:</span>
-                </h2>
-
-                {/* Center Featured Preview Window with Playful Banner Stickers */}
-                <div className="mt-5 relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/20 bg-[#030712] shadow-2xl group">
-                  <img
-                    src="/events/code_hustle_1.webp"
-                    alt="Code Hustle 24-hour hackathon floor"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#02050c]/80 via-transparent to-[#02050c]/40" />
-
-                  {/* Playful Handwritten & Sticker Elements */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1ab7f2] text-[#020813] font-display font-black text-xs sm:text-sm md:text-base px-5 sm:px-7 py-2 sm:py-2.5 rounded-full uppercase tracking-wider shadow-[0_10px_30px_rgba(26,183,242,0.5)] transform -rotate-3 border-2 border-white pointer-events-none select-none">
-                    WELCOME TO HYPERVISION
-                  </div>
-
-                  {/* Tech annotations overlay */}
-                  <span className="absolute top-2.5 left-2.5 bg-[#050c18]/90 text-[8px] sm:text-[9px] font-mono uppercase tracking-widest text-white px-2.5 py-1 rounded-full border border-white/20">
-                    03:42 AM SPRINTS &bull; LABS
-                  </span>
-                  <span className="absolute bottom-2.5 left-2.5 bg-[#050c18]/90 text-[8px] sm:text-[9px] font-mono uppercase tracking-widest text-[#1ab7f2] px-2.5 py-1 rounded-full border border-[#1ab7f2]/30">
-                    DRONE AVIONICS &bull; MEITY
-                  </span>
-                  <span className="absolute bottom-2.5 right-2.5 bg-[#050c18]/90 text-[8px] sm:text-[9px] font-mono uppercase tracking-widest text-white px-2.5 py-1 rounded-full border border-white/20">
-                    330+ TEAMS
-                  </span>
-                </div>
-
-                {/* Email Join Form */}
-                <div className="mt-5 max-w-md mx-auto">
-                  <form
-                    onSubmit={handleSubmit}
-                    className="flex items-center bg-[#040812] border border-white/20 focus-within:border-[#1ab7f2] p-1.5 shadow-2xl transition-all rounded-full"
-                  >
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="your.email@stu.upes.ac.in"
-                      className="flex-1 bg-transparent px-4 py-2 text-xs sm:text-sm text-white placeholder-[#597187] focus:outline-none font-mono"
-                    />
-                    <button
-                      type="submit"
-                      className="editorial-button primary !min-h-[38px] !px-6 text-xs font-bold shrink-0 rounded-full cursor-pointer"
-                    >
-                      {submitted ? 'Joined!' : 'Join!'}
-                    </button>
-                  </form>
-                </div>
-
-                {/* Action Links & Terms */}
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-                  <a
-                    href="#events"
-                    className="editorial-button primary text-xs !min-h-[36px] !px-5 rounded-full"
-                  >
-                    Explore current programs &rarr;
-                  </a>
-                  <a
-                    href="/board"
-                    className="editorial-button text-xs !min-h-[36px] !px-5 rounded-full"
-                  >
-                    Meet the Board
-                  </a>
-                </div>
-
-                <p className="mt-4 text-[10px] sm:text-[11px] font-mono text-[#788e9f]">
-                  For all UPES engineers &amp; developers &bull; Open to all batches
-                </p>
-              </div>
+            {/* Navigation Action Buttons */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="#events"
+                className="editorial-button primary text-xs !min-h-[40px] !px-6 rounded-full"
+              >
+                Explore current programs &rarr;
+              </a>
+              <a
+                href="/board"
+                className="editorial-button text-xs !min-h-[40px] !px-6 rounded-full"
+              >
+                Meet the Board
+              </a>
             </div>
 
-            {/* RIGHT PHOTO COLUMN (3 cols) */}
-            <div className="hidden lg:grid grid-cols-2 gap-3 lg:col-span-3">
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/events/code_hustle_2.webp"
-                  alt="Team collaborating with laptops"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/events/sih_2.webp"
-                  alt="Judging panel and student teams"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/gallery/gallery_2.webp"
-                  alt="Hardware workshop floor"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-                <img
-                  src="/events/code_connect_1.webp"
-                  alt="Computer lab programming workshop"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* BOTTOM PHOTO ROW: Full-bleed student initiatives */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mt-3">
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-              <img
-                src="/events/code_hustle_1.webp"
-                alt="Code Hustle hackathon floor builders"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg">
-              <img
-                src="/events/sih_poster.webp"
-                alt="Smart India Hackathon national qualifier"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg hidden sm:block">
-              <img
-                src="/events/code_connect.webp"
-                alt="Code connect mentorship series"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-            <div className="aspect-[16/9] overflow-hidden rounded-xl bg-[#071322] border border-white/10 group shadow-lg hidden sm:block">
-              <img
-                src="/events/pehchaan.webp"
-                alt="Pehchaan technical festival"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
+            <p className="mt-4 text-[11px] font-mono text-[#788e9f]">
+              For all UPES engineers &amp; developers &bull; Open to all batches
+            </p>
           </div>
         </div>
 
-        {/* TECHNICAL BLUEPRINT BANNER TRANSITION STRIP (Generated CAD & Engineering Blueprint) */}
-        <div className="mt-14 relative w-full overflow-hidden border-t border-b border-white/15">
-          {/* Blueprint banner illustration graphic */}
-          <div className="relative aspect-[21/9] sm:aspect-[24/7] max-h-[220px] w-full overflow-hidden bg-[#040812]">
-            <img
-              src="/assets/hypervision_blueprint_banner.jpg"
-              alt="UPES Hypervision Autonomous Drone &amp; Systems Engineering Blueprint"
-              className="w-full h-full object-cover opacity-85"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#02050c] via-transparent to-[#02050c] opacity-60" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020409] via-transparent to-transparent opacity-80" />
-
-            {/* Overlaid Airmail Postcard Sticker */}
-            <div className="absolute inset-0 flex items-center justify-center p-4">
-              <div className="airmail-box px-6 py-3.5 inline-flex items-center gap-4 text-left group rounded-2xl bg-[#050c18]/95 backdrop-blur-md border-2 border-dashed border-[#1ab7f2]/60 shadow-2xl">
-                <div>
-                  <span className="text-[9px] font-mono uppercase tracking-widest text-[#788e9f] block">
-                    HYPERVISION HQ &bull; DEHRADUN, UK &bull; EST. 2011
-                  </span>
-                  <strong className="text-xs sm:text-sm font-display text-white group-hover:text-[#1ab7f2] transition-colors block mt-0.5">
-                    TO: you, a builder anywhere at UPES
-                  </strong>
-                </div>
-                <a
-                  href="#events"
-                  className="bg-[#1ab7f2] hover:bg-white text-[#020813] font-bold text-[10px] font-mono uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all shrink-0 no-underline"
-                >
-                  Explore Flagships &rarr;
-                </a>
-              </div>
+        {/* Subtle Tech Stamp Ribbon at Bottom of Section */}
+        <div className="mt-14 relative z-10 flex justify-center px-4">
+          <div className="airmail-box px-6 py-3 inline-flex items-center gap-4 text-left group rounded-2xl bg-[#050c18]/90 backdrop-blur-md border border-white/10 hover:border-[#1ab7f2]/50 shadow-xl">
+            <div>
+              <span className="text-[9px] font-mono uppercase tracking-widest text-[#788e9f] block">
+                UPES HYPERVISION &bull; DEHRADUN &bull; EST. 2011
+              </span>
+              <strong className="text-xs sm:text-sm font-display text-white group-hover:text-[#1ab7f2] transition-colors block mt-0.5">
+                TO: you, a builder anywhere at UPES
+              </strong>
             </div>
+            <a
+              href="#events"
+              className="bg-[#1ab7f2] hover:bg-white text-[#020813] font-bold text-[10px] font-mono uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all shrink-0 no-underline"
+            >
+              Explore Flagships &rarr;
+            </a>
           </div>
-
-          {/* Wavy bottom SVG transition contour */}
-          <svg
-            className="w-full h-8 text-[#020409] fill-current block -mt-1"
-            viewBox="0 0 1440 40"
-            preserveAspectRatio="none"
-          >
-            <path d="M0,20 C320,40 420,0 720,20 C1020,40 1120,0 1440,20 L1440,40 L0,40 Z" />
-          </svg>
         </div>
       </section>
 

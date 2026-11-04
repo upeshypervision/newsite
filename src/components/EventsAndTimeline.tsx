@@ -105,7 +105,7 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
         {/* Header with Horizontal Scroll Controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b rule mb-8">
           <div>
-            <p className="section-kicker">03 // Programs &amp; Flagships</p>
+            <p className="section-kicker">02 // Programs &amp; Flagships</p>
             <h2 className="section-title">
               Imagine a room where<br />
               <span className="text-[#1ab7f2]">you built this:</span>

@@ -73,7 +73,7 @@ export const Projects: React.FC = () => {
         {/* Section Header with Arrow Navigation */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b rule mb-8">
           <div>
-            <p className="section-kicker">02 // What We Ship</p>
+            <p className="section-kicker">05 // What We Ship</p>
             <h2 className="section-title">
               Working systems,<br />
               <span className="text-[#1ab7f2]">zero theory.</span>
