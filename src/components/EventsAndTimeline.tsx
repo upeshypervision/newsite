@@ -1,22 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CONTENT_EVENT, getManagedEvents, hydrateManagedContent, ManagedEvent } from '../data/contentStore';
-import { PROJECTS, Project } from '../data/hypervisionData';
 import { TiltCard } from './TiltCard';
 
 interface EventsProps {
   onOpenJoin: () => void;
 }
 
-type ShowcaseItem =
-  | { kind: 'event'; data: ManagedEvent }
-  | { kind: 'system'; data: Project };
-
 export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
   const [events, setEvents] = useState<ManagedEvent[]>(getManagedEvents);
   const [selectedEvent, setSelectedEvent] = useState<ManagedEvent | null>(null);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [filter, setFilter] = useState<'all' | 'live' | 'systems' | 'flagships'>('all');
+  const [filter, setFilter] = useState<'all' | 'live' | 'hackathons' | 'bootcamps'>('all');
+  const [isPaused, setIsPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const update = () => setEvents(getManagedEvents());
@@ -29,35 +25,79 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSelectedEvent(null);
-        setSelectedProject(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleScroll = (direction: 'left' | 'right') => {
+  const filteredEvents = events.filter((e) => {
+    if (filter === 'live') return Boolean(e.isUpcoming);
+    if (filter === 'hackathons') return e.category === 'hackathon';
+    if (filter === 'bootcamps') return e.category === 'bootcamp' || e.category === 'workshop' || e.category === 'symposium';
+    return true;
+  });
+
+  // Ensure enough items for continuous looping by repeating
+  let displayEvents = [...filteredEvents];
+  if (displayEvents.length > 0) {
+    while (displayEvents.length < 8) {
+      displayEvents = [...displayEvents, ...filteredEvents];
+    }
+    // Double for seamless infinite wrap
+    displayEvents = [...displayEvents, ...displayEvents];
+  }
+
+  // Smooth continuous auto-scroll using requestAnimationFrame
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container || displayEvents.length === 0) return;
+
+    let animId: number;
+    let lastTime: number | null = null;
+    const pixelsPerSecond = 32; // gentle, readable glide speed
+
+    const step = (now: number) => {
+      if (!isPaused && container) {
+        if (lastTime !== null) {
+          const delta = (now - lastTime) / 1000;
+          container.scrollLeft += pixelsPerSecond * delta;
+
+          // Seamless loop when scrolled past half of duplicated content
+          const halfWidth = container.scrollWidth / 2;
+          if (container.scrollLeft >= halfWidth) {
+            container.scrollLeft -= halfWidth;
+          }
+        }
+        lastTime = now;
+      } else {
+        lastTime = null;
+      }
+      animId = requestAnimationFrame(step);
+    };
+
+    animId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animId);
+  }, [isPaused, filter, displayEvents.length]);
+
+  useEffect(() => {
+    return () => {
+      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    };
+  }, []);
+
+  const handleManualScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = 360;
+      setIsPaused(true);
+      const scrollAmount = 340;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
       });
+      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+      pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 2500);
     }
   };
-
-  // Combine Events and Working Systems into unified showcase
-  const eventItems: ShowcaseItem[] = events.map((e) => ({ kind: 'event', data: e }));
-  const systemItems: ShowcaseItem[] = PROJECTS.map((p) => ({ kind: 'system', data: p }));
-
-  const allItems = [...eventItems, ...systemItems];
-
-  const filteredItems = allItems.filter((item) => {
-    if (filter === 'live') return item.kind === 'event' && item.data.isUpcoming;
-    if (filter === 'systems') return item.kind === 'system';
-    if (filter === 'flagships') return item.kind === 'event';
-    return true;
-  });
 
   return (
     <section id="events" className="site-section py-20 sm:py-28 bg-[#030611] text-white overflow-hidden">
@@ -65,7 +105,7 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
         {/* Header with Horizontal Scroll Controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b rule mb-8">
           <div>
-            <p className="section-kicker">03 // Programs &amp; Production Systems</p>
+            <p className="section-kicker">03 // Programs &amp; Flagships</p>
             <h2 className="section-title">
               Imagine a room where<br />
               <span className="text-[#1ab7f2]">you built this:</span>
@@ -80,15 +120,17 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
             {/* Scroll navigation arrows */}
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={() => handleScroll('left')}
-                className="w-10 h-10 rounded-full border border-white/20 hover:border-[#1ab7f2] bg-[#071322] flex items-center justify-center text-white hover:text-[#1ab7f2] transition-colors"
+                type="button"
+                onClick={() => handleManualScroll('left')}
+                className="w-10 h-10 rounded-full border border-white/20 hover:border-[#1ab7f2] bg-[#071322] flex items-center justify-center text-white hover:text-[#1ab7f2] transition-colors cursor-pointer"
                 title="Scroll Left"
               >
                 &larr;
               </button>
               <button
-                onClick={() => handleScroll('right')}
-                className="w-10 h-10 rounded-full border border-white/20 hover:border-[#1ab7f2] bg-[#071322] flex items-center justify-center text-white hover:text-[#1ab7f2] transition-colors"
+                type="button"
+                onClick={() => handleManualScroll('right')}
+                className="w-10 h-10 rounded-full border border-white/20 hover:border-[#1ab7f2] bg-[#071322] flex items-center justify-center text-white hover:text-[#1ab7f2] transition-colors cursor-pointer"
                 title="Scroll Right"
               >
                 &rarr;
@@ -98,8 +140,9 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-none mb-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-none mb-6">
           <button
+            type="button"
             onClick={() => setFilter('all')}
             className={`text-xs font-mono uppercase tracking-wider px-4 py-1.5 rounded-full border transition-all shrink-0 cursor-pointer ${
               filter === 'all'
@@ -107,9 +150,10 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
                 : 'border-white/10 text-[#788e9f] hover:text-white'
             }`}
           >
-            All Tracks ({allItems.length})
+            All Programs ({events.length})
           </button>
           <button
+            type="button"
             onClick={() => setFilter('live')}
             className={`text-xs font-mono uppercase tracking-wider px-4 py-1.5 rounded-full border transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
               filter === 'live'
@@ -118,181 +162,126 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
             }`}
           >
             <span className="w-1.5 h-1.5 bg-[#1ab7f2] rounded-full animate-ping" />
-            Live Flagship
+            Live &amp; Upcoming
           </button>
           <button
-            onClick={() => setFilter('systems')}
+            type="button"
+            onClick={() => setFilter('hackathons')}
             className={`text-xs font-mono uppercase tracking-wider px-4 py-1.5 rounded-full border transition-all shrink-0 cursor-pointer ${
-              filter === 'systems'
+              filter === 'hackathons'
                 ? 'border-[#1ab7f2] bg-[#1ab7f2] text-black font-bold'
                 : 'border-white/10 text-[#788e9f] hover:text-white'
             }`}
           >
-            Working Systems ({systemItems.length})
+            Hackathons &amp; Sprints
           </button>
           <button
-            onClick={() => setFilter('flagships')}
+            type="button"
+            onClick={() => setFilter('bootcamps')}
             className={`text-xs font-mono uppercase tracking-wider px-4 py-1.5 rounded-full border transition-all shrink-0 cursor-pointer ${
-              filter === 'flagships'
+              filter === 'bootcamps'
                 ? 'border-[#1ab7f2] bg-[#1ab7f2] text-black font-bold'
                 : 'border-white/10 text-[#788e9f] hover:text-white'
             }`}
           >
-            Flagships &amp; Sprints ({eventItems.length})
+            Bootcamps &amp; Mentorship
           </button>
         </div>
 
-        {/* HORIZONTAL SCROLLING TRACK (Live Events BIGGER + Working Systems Included) */}
+        {/* HORIZONTAL AUTO-SCROLLING POSTER TRACK (Uniform Dimensions & Smooth Auto-Scroll) */}
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto pb-6 pt-3 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 items-stretch"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => {
+            if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+            pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), 2000);
+          }}
+          className="flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {filteredItems.map((item) => {
-            if (item.kind === 'event') {
-              const event = item.data;
-              const isLive = event.isUpcoming;
+          {displayEvents.map((event, index) => {
+            const isLive = Boolean(event.isUpcoming);
 
-              return (
-                <div
-                  key={event.id}
-                  className={`shrink-0 snap-start transition-all duration-300 ${
-                    isLive
-                      ? 'w-[320px] sm:w-[440px] md:w-[480px]' // LIVE EVENTS SHOWN BIGGER
-                      : 'w-[280px] sm:w-[320px]'
-                  }`}
-                >
-                  <TiltCard maxTilt={8} className="h-full">
-                    <article
-                      onClick={() => setSelectedEvent(event)}
-                      className={`group relative rounded-3xl overflow-hidden cursor-pointer shadow-2xl transition-all duration-300 flex flex-col justify-between p-6 sm:p-7 text-left h-full ${
-                        isLive
-                          ? 'aspect-[10/13] sm:aspect-[16/12] border-2 border-[#1ab7f2] shadow-[0_0_40px_rgba(26,183,242,0.35)] bg-gradient-to-t from-[#02050c] to-[#081528]'
-                          : 'aspect-[9/13] border border-white/10 hover:border-[#1ab7f2] bg-[#071322]'
-                      }`}
-                    >
-                      {/* Full-bleed poster image in natural color */}
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
-
-                      {/* Gradient overlay for bottom readability */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#02050c] via-[#02050c]/65 to-transparent" />
-
-                      {/* Top status & category tag */}
-                      <div className="relative z-10 flex items-center justify-between gap-2">
-                        <span className="bg-[#050c18]/90 text-[#1ab7f2] border border-[#1ab7f2]/40 font-mono text-[9px] uppercase tracking-wider px-3 py-1 rounded-full font-bold">
-                          {event.category}
-                        </span>
-                        {isLive ? (
-                          <span className="bg-[#1ab7f2] text-[#020813] font-bold text-[10px] font-mono uppercase tracking-wider px-3.5 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
-                            <span className="w-2 h-2 bg-[#020813] rounded-full animate-ping" />
-                            Live Flagship
-                          </span>
-                        ) : (
-                          <span className="bg-white text-[#020813] font-bold text-[9px] font-mono uppercase tracking-wider px-3 py-0.5 rounded-full shadow">
-                            Ended
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Bottom Content Area */}
-                      <div className="relative z-10">
-                        {isLive && (
-                          <div className="mb-2">
-                            <span className="text-[10px] font-mono uppercase tracking-widest text-[#1ab7f2] font-semibold">
-                              MAC Auditorium &bull; 60+ Finalist Teams
-                            </span>
-                          </div>
-                        )}
-
-                        <h3
-                          className={`font-display font-black text-white group-hover:text-[#1ab7f2] transition-colors leading-tight ${
-                            isLive ? 'text-2xl sm:text-4xl' : 'text-xl sm:text-2xl'
-                          }`}
-                        >
-                          {event.title}
-                        </h3>
-
-                        <p className="mt-1.5 text-xs sm:text-sm text-[#9ab0c4] line-clamp-2 leading-relaxed">
-                          {event.subtitle || event.description}
-                        </p>
-
-                        <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between">
-                          <span
-                            className={`inline-flex items-center gap-1.5 font-mono font-bold transition-colors ${
-                              isLive
-                                ? 'editorial-button primary text-xs !min-h-[34px] !px-4'
-                                : 'text-xs text-white group-hover:text-[#1ab7f2]'
-                            }`}
-                          >
-                            {isLive ? 'Register Now \u2192' : 'Dive In \u2197'}
-                          </span>
-
-                          <span className="text-[10px] font-mono text-[#8fa2b6]">
-                            {event.month} {event.year}
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                  </TiltCard>
-                </div>
-              );
-            }
-
-            // KIND: SYSTEM (Working systems, zero theory)
-            const project = item.data;
             return (
               <div
-                key={project.id}
-                className="w-[280px] sm:w-[320px] shrink-0 snap-start"
+                key={`${event.id}-${index}`}
+                className="w-[290px] sm:w-[320px] shrink-0 snap-start"
               >
                 <TiltCard maxTilt={8} className="h-full">
                   <article
-                    onClick={() => setSelectedProject(project)}
-                    className="group relative aspect-[9/13] rounded-3xl overflow-hidden border border-white/10 hover:border-[#1ab7f2] cursor-pointer shadow-2xl transition-all duration-300 flex flex-col justify-between p-6 text-left bg-[#071322]"
+                    onClick={() => setSelectedEvent(event)}
+                    className={`group relative h-[470px] sm:h-[490px] rounded-3xl overflow-hidden cursor-pointer shadow-2xl transition-all duration-300 flex flex-col justify-between p-6 sm:p-7 text-left ${
+                      isLive
+                        ? 'border-2 border-[#1ab7f2] shadow-[0_0_35px_rgba(26,183,242,0.32)] bg-[#040d1a]'
+                        : 'border border-white/10 hover:border-[#1ab7f2] bg-[#071322] hover:shadow-[0_20px_45px_rgba(26,183,242,0.2)]'
+                    }`}
                   >
-                    {/* Background system graphic */}
+                    {/* Full-bleed authentic poster flyer background */}
                     <img
-                      src={project.image}
-                      alt={project.title}
+                      src={event.image}
+                      alt={event.title}
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
 
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#02050c] via-[#02050c]/65 to-transparent" />
+                    {/* Gradient overlay calibrated for readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#02050c] via-[#02050c]/65 to-[#02050c]/20" />
 
-                    {/* Top status */}
+                    {/* Top status & category tags */}
                     <div className="relative z-10 flex items-center justify-between gap-2">
-                      <span className="bg-[#050c18]/90 text-[#1ab7f2] border border-[#1ab7f2]/40 font-mono text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full font-bold">
-                        SYS // {project.number} &bull; {project.category.split(' ')[0]}
+                      <span className="bg-[#050c18]/90 text-[#1ab7f2] border border-[#1ab7f2]/40 font-mono text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold">
+                        {event.category}
                       </span>
-                      <span className="bg-white text-[#020813] font-bold text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow">
-                        Live System
-                      </span>
+                      {isLive ? (
+                        <span className="bg-[#1ab7f2] text-[#020813] font-bold text-[9px] font-mono uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
+                          <span className="w-1.5 h-1.5 bg-[#020813] rounded-full animate-ping" />
+                          Live Flagship
+                        </span>
+                      ) : (
+                        <span className="bg-white text-[#020813] font-bold text-[9px] font-mono uppercase tracking-wider px-3 py-0.5 rounded-full shadow">
+                          Ended
+                        </span>
+                      )}
                     </div>
 
                     {/* Bottom Content Area */}
                     <div className="relative z-10">
-                      <h3 className="font-display font-extrabold text-xl sm:text-2xl text-white group-hover:text-[#1ab7f2] transition-colors leading-tight">
-                        {project.title}
+                      {isLive ? (
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-[#1ab7f2] font-semibold mb-1 truncate">
+                          MAC Auditorium &bull; 60+ Finalist Teams
+                        </p>
+                      ) : (
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-[#788e9f] font-semibold mb-1 truncate">
+                          {event.subtitle || event.location}
+                        </p>
+                      )}
+
+                      <h3 className="font-display font-black text-xl sm:text-2xl text-white group-hover:text-[#1ab7f2] transition-colors leading-snug">
+                        {event.title}
                       </h3>
 
-                      <p className="mt-1 text-xs text-[#9ab0c4] line-clamp-2 leading-relaxed">
-                        {project.subtitle || project.description}
+                      <p className="mt-2 text-xs text-[#9ab0c4] line-clamp-2 leading-relaxed">
+                        {event.description}
                       </p>
 
-                      <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-white group-hover:text-[#1ab7f2] transition-colors">
-                          Inspect Specs <span className="text-sm">&nearr;</span>
-                        </span>
+                      <div className="mt-4 pt-3.5 border-t border-white/15 flex items-center justify-between gap-2">
+                        {isLive ? (
+                          <button
+                            type="button"
+                            className="rounded-full bg-[#1ab7f2] hover:bg-white text-[#020813] font-bold text-xs px-4 py-1.5 transition-all shadow-md cursor-pointer"
+                          >
+                            Register Now &rarr;
+                          </button>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs font-mono font-bold text-white group-hover:text-[#1ab7f2] transition-colors">
+                            Explore Details <span className="text-sm">&nearr;</span>
+                          </span>
+                        )}
 
-                        <span className="text-[10px] font-mono text-[#8fa2b6] truncate max-w-[110px]">
-                          {project.metrics?.split('·')[0] || 'Production'}
+                        <span className="text-[10px] font-mono text-[#8fa2b6] shrink-0">
+                          {event.month} {event.year}
                         </span>
                       </div>
                     </div>
@@ -304,15 +293,10 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
         </div>
 
         {/* Footer Prompt */}
-        <div className="mt-10 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 text-xs font-mono uppercase tracking-wider text-[#788e9f]">
-          <span>{allItems.length} Live Flagships, Sprints &amp; Production Systems Tracked</span>
+        <div className="mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 text-xs font-mono uppercase tracking-wider text-[#788e9f]">
+          <span>{events.length} Programs &amp; Historical Sprints Logged</span>
           <div className="flex items-center gap-4">
-            <a
-              href="/#projects"
-              className="text-[#8fa2b6] hover:text-white transition-colors"
-            >
-              Working Systems &rarr;
-            </a>
+            <span className="hidden sm:inline-block text-[#597187]">Hover to pause &bull; Auto-scrolling</span>
             <a
               href="/events"
               className="editorial-button text-xs font-mono uppercase tracking-widest text-[#1ab7f2] rounded-full !px-5"
@@ -334,8 +318,9 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <button
+              type="button"
               onClick={() => setSelectedEvent(null)}
-              className="absolute top-4 right-4 text-xs font-mono uppercase tracking-wider text-[#788e9f] hover:text-white px-3 py-1 border border-white/10 rounded-full"
+              className="absolute top-4 right-4 text-xs font-mono uppercase tracking-wider text-[#788e9f] hover:text-white px-3 py-1 border border-white/10 rounded-full cursor-pointer"
             >
               [Close &times;]
             </button>
@@ -363,7 +348,7 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
                 </span>
               </div>
 
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-white leading-tight">
+              <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
                 {selectedEvent.title}
               </h3>
               <p className="mt-1 text-xs font-mono uppercase tracking-wider text-[#1ab7f2]">
@@ -410,11 +395,12 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
                   </a>
                 ) : (
                   <button
+                    type="button"
                     onClick={() => {
                       setSelectedEvent(null);
                       onOpenJoin();
                     }}
-                    className="editorial-button primary text-xs flex-1 text-center rounded-full"
+                    className="editorial-button primary text-xs flex-1 text-center rounded-full cursor-pointer"
                   >
                     Register for Next Sprint &rarr;
                   </button>
@@ -425,97 +411,6 @@ export const EventsAndTimeline: React.FC<EventsProps> = ({ onOpenJoin }) => {
                 >
                   View Full Archive Log
                 </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* PROJECT SPECS MODAL */}
-      {selectedProject && (
-        <div
-          className="fixed inset-0 z-50 bg-[#02060e]/90 backdrop-blur-md p-4 sm:p-8 flex items-center justify-center overflow-y-auto"
-          onClick={() => setSelectedProject(null)}
-        >
-          <div
-            className="max-w-2xl w-full bg-[#071322] border border-[#1ab7f2]/50 p-6 sm:p-8 rounded-3xl relative shadow-2xl my-auto text-left max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSelectedProject(null)}
-              className="absolute top-4 right-4 text-xs font-mono uppercase tracking-wider text-[#788e9f] hover:text-white px-3 py-1 border border-white/10 rounded-full"
-            >
-              [Close &times;]
-            </button>
-
-            <div className="relative aspect-[16/9] overflow-hidden bg-[#040810] border border-white/10 rounded-2xl mt-4 sm:mt-2">
-              <img
-                src={selectedProject.image}
-                alt={selectedProject.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#071322] via-transparent to-transparent opacity-80" />
-              <div className="absolute bottom-3 left-3 bg-[#050c16]/90 border border-white/10 px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest text-white">
-                SYS // {selectedProject.number} &bull; {selectedProject.category}
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-white leading-tight">
-                {selectedProject.title}
-              </h3>
-              <p className="mt-1 text-xs font-mono uppercase tracking-wider text-[#1ab7f2]">
-                {selectedProject.subtitle}
-              </p>
-
-              <p className="mt-4 text-sm text-[#9ab0c4] leading-relaxed">
-                {selectedProject.fullOverview || selectedProject.description}
-              </p>
-
-              {selectedProject.metrics && (
-                <div className="mt-4 p-3 bg-[#050c18] border border-white/10 rounded-xl flex items-center justify-between text-xs font-mono">
-                  <span className="text-[#788e9f] uppercase tracking-wider">Production Metrics</span>
-                  <span className="text-[#1ab7f2] font-semibold">{selectedProject.metrics}</span>
-                </div>
-              )}
-
-              <div className="mt-4">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#788e9f] block mb-2">
-                  Architecture &amp; Technologies
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedProject.technologies.map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs font-mono uppercase tracking-wider text-[#c0d4e6] bg-[#050c16] border border-white/10 px-3 py-1 rounded-full"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap gap-3">
-                {selectedProject.link && (
-                  <a
-                    href={selectedProject.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="editorial-button primary text-xs flex-1 text-center rounded-full"
-                  >
-                    Open Live Deployment &rarr;
-                  </a>
-                )}
-                {selectedProject.github && (
-                  <a
-                    href={selectedProject.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="editorial-button text-xs flex-1 text-center rounded-full"
-                  >
-                    GitHub Repository
-                  </a>
-                )}
               </div>
             </div>
           </div>
