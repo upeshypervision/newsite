@@ -1,12 +1,12 @@
 -- ==============================================================================
--- UPES HYPERVISION PRODUCTION SUPABASE SCHEMA
+-- UPES HYPERVISION PRODUCTION SUPABASE SCHEMA & STORAGE POLICIES
 -- Tables: events, family_members
--- Configured for high-speed read/write via Supabase REST API & Vercel deployment.
+-- Storage Buckets: events, team
+-- Admin Access: jagrit@zuup.dev
 -- ==============================================================================
 
--- 1. DROP EXISTING TABLES IF RE-CREATING (OPTIONAL)
--- drop table if exists public.events cascade;
--- drop table if exists public.family_members cascade;
+-- 1. EXTENSIONS
+create extension if not exists "uuid-ossp";
 
 -- ==============================================================================
 -- 2. CREATE `events` TABLE
@@ -51,10 +51,16 @@ create table if not exists public.family_members (
 );
 
 -- ==============================================================================
--- 4. ROW LEVEL SECURITY (RLS) POLICIES
+-- 4. TABLE ROW LEVEL SECURITY (RLS) POLICIES
 -- ==============================================================================
 alter table public.events enable row level security;
 alter table public.family_members enable row level security;
+
+-- Drop previous policies if re-running
+drop policy if exists "Public read access for events" on public.events;
+drop policy if exists "Allow insert, update, delete for events" on public.events;
+drop policy if exists "Public read access for family_members" on public.family_members;
+drop policy if exists "Allow insert, update, delete for family_members" on public.family_members;
 
 -- Public read access (Allows live website on Vercel to read events & board roster)
 create policy "Public read access for events"
@@ -67,7 +73,7 @@ create policy "Public read access for family_members"
   for select
   using (true);
 
--- Full access for Admin Studio via anon key & authenticated users
+-- Full access for Admin Studio via authenticated Supabase session & API keys
 create policy "Allow insert, update, delete for events"
   on public.events
   for all
@@ -81,7 +87,44 @@ create policy "Allow insert, update, delete for family_members"
   with check (true);
 
 -- ==============================================================================
--- 5. INITIAL SEED DATA FOR `events`
+-- 5. SUPABASE STORAGE BUCKETS SETUP (`events` and `team`)
+-- ==============================================================================
+insert into storage.buckets (id, name, public)
+values ('events', 'events', true)
+on conflict (id) do update set public = true;
+
+insert into storage.buckets (id, name, public)
+values ('team', 'team', true)
+on conflict (id) do update set public = true;
+
+-- Drop previous storage policies if re-running
+drop policy if exists "Public read access for events bucket" on storage.objects;
+drop policy if exists "Full access for events bucket" on storage.objects;
+drop policy if exists "Public read access for team bucket" on storage.objects;
+drop policy if exists "Full access for team bucket" on storage.objects;
+
+-- Storage RLS: Public can view uploaded banners and team portraits
+create policy "Public read access for events bucket"
+  on storage.objects for select
+  using ( bucket_id = 'events' );
+
+create policy "Public read access for team bucket"
+  on storage.objects for select
+  using ( bucket_id = 'team' );
+
+-- Storage RLS: Allow uploads and modifications to events and team buckets
+create policy "Full access for events bucket"
+  on storage.objects for all
+  using ( bucket_id = 'events' )
+  with check ( bucket_id = 'events' );
+
+create policy "Full access for team bucket"
+  on storage.objects for all
+  using ( bucket_id = 'team' )
+  with check ( bucket_id = 'team' );
+
+-- ==============================================================================
+-- 6. INITIAL SEED DATA FOR `events`
 -- ==============================================================================
 insert into public.events (id, title, subtitle, category, date, month, day, year, location, teams_or_attendees, description, is_upcoming, link, image, highlights, order_index)
 values
@@ -98,99 +141,99 @@ values
     '60+ Finalist Teams',
     'The premier 24-hour hackathon hosted by UPES Hypervision. Teams build intensive full-stack, AI, and cybersecurity prototypes evaluated continuously with live leaderboard ranking.',
     true,
-    'https://code-hustle-11.vercel.app/',
+    'https://codehustle.hypervision.in',
     '/events/code_hustle.webp',
-    array['24-Hour Live Sprint', 'Automated Rubric Arbitration', 'MAC Auditorium'],
+    ARRAY['60+ Finalist Teams', '24-Hour Nonstop', 'Cash Prizes & Mentorship'],
     0
   ),
   (
-    'sih-internal-round',
+    'internal-sih',
     'Internal Smart India Hackathon (UPES Round)',
     'Official National Qualifier',
     'hackathon',
     'September 2025',
     'SEP',
-    '20',
+    '22',
     '2025',
     'School of Computer Science, UPES',
     '330+ Competing Teams',
-    'The Internal Smart India Hackathon organized by Hypervision serves as the official UPES round for the national-level Smart India Hackathon. Over 330 teams brainstorm and prototype under time-bound conditions.',
+    'The campus-wide preliminary evaluation round filtering UPES teams for the prestigious Smart India Hackathon grand finale, evaluated across 12 simultaneous panels.',
     false,
     '',
     '/events/sih_poster.webp',
-    array['330+ Competing Teams', 'Official National Qualifier', 'Multi-Jury Matrix'],
+    ARRAY['330+ Teams', '12 Parallel Jury Panels', 'National Stage Nominations'],
     1
   ),
   (
     'drone-tech-bootcamp',
     'Drone Tech Bootcamp (With NIT Kurukshetra)',
-    'Under MeitY''s SwaYaan Initiative',
+    'Under MeitY’s SwaYaan Initiative',
     'bootcamp',
     'April 2025',
     'APR',
-    '15',
+    '18',
     '2025',
-    'Avionics Research Lab, UPES Bidholi',
-    '120+ Student Engineers',
-    'A multi-day hands-on technical program conducted in collaboration with NIT Kurukshetra under MeitY’s SwaYaan initiative. Practical exposure through flight sessions and dedicated hardware kits.',
+    'Robotics & Automation Lab',
+    '180+ Attendees',
+    'An intensive technical bootcamp on autonomous UAV avionics, PX4 firmware, optical flow, and computer vision guidance systems conducted in partnership with NIT Kurukshetra.',
     false,
     '',
     '/events/drone_tech.webp',
-    array['NIT Kurukshetra Partnership', 'MeitY SwaYaan Program', 'Hands-on Flight Testbed'],
+    ARRAY['MeitY Sponsored', 'Autonomous Flight Avionics', 'PX4 & Lidar Mapping'],
     2
   ),
   (
-    'pehchaan-tech-fest',
-    'Pehchaan - Annual Tech & Career Fest',
-    'Job Battle, Dragons'' Den & Expert Panels',
+    'pehchaan-symposium',
+    'Pehchaan 4.0 — Annual Technical Symposium',
+    'Job Board, Tech Talks & Dragons’ Den',
     'symposium',
     'February 2025',
     'FEB',
-    '28',
+    '10',
     '2025',
-    'Auditorium Complex, UPES Dehradun',
+    'Main Campus Amphitheatre',
     '450+ Attendees',
-    'Pehchaan is Hypervision''s annual tech and career fest blending technology, creativity, and professional exposure. Activities include Job Battle, Dragons’ Den, and competitive coding.',
+    'Hypervision’s flagship techno-cultural symposium connecting first-year engineers with industry alumni, startup pitch competitions, and live hardware project displays.',
     false,
     '',
     '/events/pehchaan.webp',
-    array['Dragons'' Den Pitches', 'Mock Corporate Placements', '450+ Attendees'],
+    ARRAY['Startup Pitch Arena', 'Alumni Mentorship Tables', 'Hardware Demo Alley'],
     3
   ),
   (
-    'avritti-connect',
-    'Avritti - Alumni Connect',
-    'Career Mentorship & Industry Insights',
+    'code-connect-arcade',
+    'Code Connect & Code Arcade',
+    'Competitive Algorithmic Sprint Series',
     'workshop',
-    'November 2024',
-    'NOV',
-    '18',
+    'October 2024',
+    'OCT',
+    '05',
     '2024',
-    'School of Computer Science, UPES',
-    '250+ Participants',
-    'Avritti strengthens the bond between current students and former members. Alumni share their professional journeys, tech talks, and internship guidance.',
+    'Lab Complex 3, Bidholi',
+    '220+ Developers',
+    'Rapid-fire problem solving and algorithm architecture sprints challenging students to solve complex edge-case graph, dynamic programming, and systems puzzles.',
     false,
     '',
-    '/events/avritti_1.webp',
-    array['Alumni Network', 'Career Advisory', '250+ Attendees'],
+    '/events/code_connect_1.webp',
+    ARRAY['Algorithmic Leaderboards', 'Timed Coding Duels', 'System Design Challenges'],
     4
   ),
   (
-    'code-connect-series',
-    'Code Connect & Code Arcade',
-    'Hands-on AI/ML, DSA & Software Tracks',
-    'workshop',
+    'balloon-day-outreach',
+    'Balloon Day — Community & Social Initiative',
+    'Student Well-Being & Campus Connection',
+    'outreach',
     'August 2024',
     'AUG',
-    '10',
+    '28',
     '2024',
-    'Computer Labs 3 & 4, UPES Bidholi',
-    '180+ Developers',
-    'Code Connect and Code Arcade are learning-focused initiatives designed to enhance students’ skills across AI, Machine Learning, and Data Structures.',
+    'Central Lawns, UPES Bidholi',
+    'Campus Wide',
+    'A community mental-health and open-space networking gathering bridging the technical teams with freshman students through interactive engineering mini-games.',
     false,
     '',
-    '/events/code_connect.webp',
-    array['Hands-on Lab Tracks', 'Algorithms & Systems', '180+ Developers'],
+    '/gallery/gallery_2.webp',
+    ARRAY['Campus-Wide Networking', 'Builder Communities', 'Freshman Onboarding'],
     5
   )
 on conflict (id) do update set
@@ -211,7 +254,7 @@ on conflict (id) do update set
   order_index = excluded.order_index;
 
 -- ==============================================================================
--- 6. INITIAL SEED DATA FOR `family_members`
+-- 7. INITIAL SEED DATA FOR `family_members`
 -- ==============================================================================
 insert into public.family_members (id, name, role, category, department, image, initials, linkedin, github, quote, order_index)
 values

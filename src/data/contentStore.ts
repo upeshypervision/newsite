@@ -1,17 +1,31 @@
 import { EVENTS, TEAM_MEMBERS, EventItem, TeamMember } from './hypervisionData';
 
 /**
- * Content store with transparent Supabase hydration and offline localStorage caching.
- * All public surfaces (Board, Family, Events, Archive) subscribe to CONTENT_EVENT.
+ * UPES Hypervision Content Store
+ * Supabase-backed dynamic content repository with live REST API sync,
+ * authenticated session management, and Supabase Storage bucket uploads.
  */
 const EVENTS_KEY = 'hypervision_admin_events';
 const FAMILY_KEY = 'hypervision_admin_family';
+const SESSION_KEY = 'hypervision_admin_session';
 const CONTENT_EVENT = 'hypervision:content-updated';
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const SUPABASE_SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY as string | undefined;
 
 export type ManagedEvent = EventItem & { highlights: string[] };
 export type ManagedFamilyMember = TeamMember & { quote: string };
+
+export interface AdminSession {
+  accessToken: string;
+  refreshToken?: string;
+  user: {
+    id: string;
+    email: string;
+  };
+  expiresAt: number;
+}
 
 const seedEvents: ManagedEvent[] = EVENTS.map((event) => ({
   ...event,
@@ -43,14 +57,145 @@ function write<T>(key: string, value: T) {
   window.dispatchEvent(new CustomEvent(CONTENT_EVENT));
 }
 
-const supabaseHeaders = () => ({
-  apikey: SUPABASE_ANON_KEY ?? '',
-  Authorization: `Bearer ${SUPABASE_ANON_KEY ?? ''}`,
-  'Content-Type': 'application/json',
-  Prefer: 'resolution=merge-duplicates',
-});
-
 export const supabaseReady = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+export function getAdminSession(): AdminSession | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw) as AdminSession;
+    if (session.expiresAt && Date.now() > session.expiresAt) {
+      window.localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+export async function loginWithSupabase(
+  email: string,
+  password: string
+): Promise<{ success: boolean; error?: string; session?: AdminSession }> {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    return { success: false, error: 'Supabase credentials not configured in environment.' };
+  }
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: email.trim(), password }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      return {
+        success: false,
+        error: data.error_description || data.msg || data.message || 'Supabase authentication rejected this login.',
+      };
+    }
+
+    const session: AdminSession = {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      user: {
+        id: data.user?.id || '',
+        email: data.user?.email || email,
+      },
+      expiresAt: Date.now() + (data.expires_in || 3600) * 1000,
+    };
+
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      window.dispatchEvent(new CustomEvent(CONTENT_EVENT));
+    }
+
+    return { success: true, session };
+  } catch (err) {
+    return {
+      success: false,
+      error: (err as Error).message || 'Network error reaching Supabase Auth service.',
+    };
+  }
+}
+
+export function logoutAdmin() {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(SESSION_KEY);
+    window.dispatchEvent(new CustomEvent(CONTENT_EVENT));
+  }
+}
+
+const supabaseHeaders = () => {
+  const session = getAdminSession();
+  const bearer = session?.accessToken || SUPABASE_SERVICE_KEY || SUPABASE_ANON_KEY || '';
+  return {
+    apikey: SUPABASE_ANON_KEY ?? '',
+    Authorization: `Bearer ${bearer}`,
+    'Content-Type': 'application/json',
+    Prefer: 'resolution=merge-duplicates',
+  };
+};
+
+export async function uploadToSupabaseStorage(
+  bucket: 'events' | 'team',
+  file: File
+): Promise<{ url: string; error?: string }> {
+  if (!SUPABASE_URL) {
+    return { url: '', error: 'Supabase URL not configured' };
+  }
+
+  const session = getAdminSession();
+  const ext = file.name.split('.').pop() || 'png';
+  const cleanBase = file.name
+    .replace(/\.[^/.]+$/, '')
+    .replace(/[^a-zA-Z0-9_-]/g, '_')
+    .slice(0, 30);
+  const fileName = `${Date.now()}_${cleanBase}.${ext}`;
+
+  // Try session token first, fallback to service key if configured
+  const tokensToTry = [
+    session?.accessToken,
+    SUPABASE_SERVICE_KEY,
+    SUPABASE_ANON_KEY,
+  ].filter(Boolean) as string[];
+
+  let lastError = '';
+  for (const token of tokensToTry) {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${fileName}`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON_KEY || '',
+          Authorization: `Bearer ${token}`,
+          'Content-Type': file.type || 'image/jpeg',
+          'x-upsert': 'true',
+        },
+        body: file,
+      });
+
+      if (response.ok) {
+        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${fileName}`;
+        return { url: publicUrl };
+      } else {
+        const errJson = await response.json().catch(() => ({}));
+        lastError = errJson.message || errJson.error || response.statusText;
+      }
+    } catch (err) {
+      lastError = (err as Error).message || 'Network error during upload';
+    }
+  }
+
+  return {
+    url: '',
+    error: `Supabase Storage error: ${lastError || 'Upload failed. Ensure bucket policies exist.'}`,
+  };
+}
 
 function eventRow(event: ManagedEvent, index: number) {
   return {
@@ -82,7 +227,14 @@ function familyRow(member: ManagedFamilyMember, index: number) {
     category: member.category,
     department: member.department || '',
     image: member.image || '',
-    initials: member.initials || member.name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase(),
+    initials:
+      member.initials ||
+      member.name
+        .split(' ')
+        .map((p) => p[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase(),
     linkedin: member.linkedin || null,
     github: member.github || null,
     quote: member.quote || '',
@@ -93,11 +245,15 @@ function familyRow(member: ManagedFamilyMember, index: number) {
 async function upsert(table: string, rows: unknown[]) {
   if (!supabaseReady) return;
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=id`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?on_conflict=id`, {
       method: 'POST',
       headers: supabaseHeaders(),
       body: JSON.stringify(rows),
     });
+    if (!res.ok) {
+      const err = await res.text();
+      console.warn(`Supabase upsert failed for ${table}:`, err);
+    }
   } catch (err) {
     console.warn(`Supabase upsert failed for ${table}:`, err);
   }
@@ -106,10 +262,14 @@ async function upsert(table: string, rows: unknown[]) {
 async function deleteFromSupabase(table: string, id: string) {
   if (!supabaseReady) return;
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       headers: supabaseHeaders(),
     });
+    if (!res.ok) {
+      const err = await res.text();
+      console.warn(`Supabase delete failed for ${table}:`, err);
+    }
   } catch (err) {
     console.warn(`Supabase delete failed for ${table}:`, err);
   }
